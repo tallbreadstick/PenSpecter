@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.PenSpecter" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Splash" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/pale_blue</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
 </resources>
