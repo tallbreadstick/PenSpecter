@@ -1,4 +1,4 @@
-package com.tallbreadstick.penspecter.activities
+package com.tallbreadstick.penspecter
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -8,7 +8,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
-import com.tallbreadstick.penspecter.MainActivity
 import kotlinx.coroutines.delay
 
 @SuppressLint("CustomSplashScreen")
