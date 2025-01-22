@@ -1,6 +1,7 @@
 package com.tallbreadstick.penspecter.screens.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,17 +26,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
 import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 import com.tallbreadstick.penspecter.ui.theme.Roboto
 
-@Preview
 @Composable
-fun LoginPage() {
+fun LoginPage(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -137,7 +137,10 @@ fun LoginPage() {
             text = "don't have an account? register",
             color = Color.Gray,
             style = TextStyle(textDecoration = TextDecoration.Underline),
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            modifier = Modifier.clickable {
+                navController.navigate("register_page")
+            }
         )
     }
 }

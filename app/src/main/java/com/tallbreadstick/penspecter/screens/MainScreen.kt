@@ -13,10 +13,10 @@ fun MainScreen() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "login_page", builder = {
         composable("login_page") {
-            LoginPage()
+            LoginPage(navController)
         }
         composable("register_page") {
-            RegisterPage()
+            RegisterPage(navController)
         }
         composable("recovery_page") {
             RecoveryPage()
