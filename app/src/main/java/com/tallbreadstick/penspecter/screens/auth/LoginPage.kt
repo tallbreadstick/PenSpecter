@@ -38,6 +38,15 @@ import com.tallbreadstick.penspecter.ui.theme.Roboto
 @Preview
 @Composable
 fun LoginPage(navController: NavController? = null) {
+    val username = remember {
+        mutableStateOf("")
+    }
+    val password = remember {
+        mutableStateOf("")
+    }
+    val agree = remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +63,7 @@ fun LoginPage(navController: NavController? = null) {
             modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 80.dp)
         )
         TextField(
-            value = "",
+            value = username.value,
             placeholder = {
                 Text(
                     text = "Username",
@@ -67,12 +76,12 @@ fun LoginPage(navController: NavController? = null) {
                 unfocusedContainerColor = Color.DarkGray,
                 focusedContainerColor = Color.DarkGray
             ),
-            onValueChange = {
-
+            onValueChange = { newText ->
+                username.value = newText
             }
         )
         TextField(
-            value = "",
+            value = password.value,
             placeholder = {
                 Text(
                     text = "Password",
@@ -85,22 +94,19 @@ fun LoginPage(navController: NavController? = null) {
                 unfocusedContainerColor = Color.DarkGray,
                 focusedContainerColor = Color.DarkGray
             ),
-            onValueChange = {
-
+            onValueChange = { newText ->
+                password.value = newText
             }
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val isChecked = remember {
-                mutableStateOf(false)
-            }
             Checkbox(
-                checked = isChecked.value,
+                checked = agree.value,
                 modifier = Modifier.scale(1.2f),
                 onCheckedChange = { newState ->
-                    isChecked.value = newState
+                    agree.value = newState
                 }
             )
             Text(
