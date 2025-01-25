@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -34,8 +35,9 @@ import com.tallbreadstick.penspecter.ui.theme.DidactGothic
 import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 import com.tallbreadstick.penspecter.ui.theme.Roboto
 
+@Preview
 @Composable
-fun RegisterPage(navController: NavController) {
+fun RegisterPage(navController: NavController? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -170,7 +172,10 @@ fun RegisterPage(navController: NavController) {
             modifier = Modifier
                 .padding(0.dp, 40.dp, 0.dp, 0.dp)
                 .clickable {
-                    navController.navigate("login_page")
+                    navController!!.navigate("login_page") {
+                        popUpTo("register_page") { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
         )
     }
