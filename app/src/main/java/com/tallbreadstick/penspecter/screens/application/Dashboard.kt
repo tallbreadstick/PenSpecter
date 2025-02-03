@@ -1,4 +1,4 @@
-package com.tallbreadstick.penspecter.screens.auth
+package com.tallbreadstick.penspecter.screens.application
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -9,17 +9,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.tallbreadstick.penspecter.menus.Navbar
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 
 @Preview
 @Composable
-fun RecoveryPage(navController: NavController? = null) {
+fun Dashboard(navController: NavController? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkGray)
-            .wrapContentSize(Alignment.Center)
+            .wrapContentSize(Alignment.TopCenter)
     ) {
-
+        Navbar()
     }
 }

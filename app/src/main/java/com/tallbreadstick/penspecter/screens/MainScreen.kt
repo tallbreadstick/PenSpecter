@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tallbreadstick.penspecter.screens.application.Dashboard
 import com.tallbreadstick.penspecter.screens.auth.LoginPage
 import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
@@ -22,7 +23,10 @@ fun MainScreen() {
                 RegisterPage(navController)
             }
             composable("recovery_page") {
-                RecoveryPage()
+                RecoveryPage(navController)
+            }
+            composable("dashboard") {
+                Dashboard(navController)
             }
         })
     }

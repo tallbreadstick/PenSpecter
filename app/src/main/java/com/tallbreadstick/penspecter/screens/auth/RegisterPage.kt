@@ -38,6 +38,9 @@ import com.tallbreadstick.penspecter.ui.theme.Roboto
 @Preview
 @Composable
 fun RegisterPage(navController: NavController? = null) {
+    val agree = remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -129,14 +132,11 @@ fun RegisterPage(navController: NavController? = null) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val isChecked = remember {
-                mutableStateOf(false)
-            }
             Checkbox(
-                checked = isChecked.value,
+                checked = agree.value,
                 modifier = Modifier.scale(1.2f),
                 onCheckedChange = { newState ->
-                    isChecked.value = newState
+                    agree.value = newState
                 }
             )
             Text(
