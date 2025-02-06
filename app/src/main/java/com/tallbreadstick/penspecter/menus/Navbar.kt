@@ -12,13 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tallbreadstick.penspecter.ui.theme.LightGray
+import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 
 @Composable
 fun Navbar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(LightGray)
+            .background(PaleBlue)
             .padding(8.dp)
             .wrapContentSize(Alignment.CenterEnd)
     ) {

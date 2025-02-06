@@ -124,7 +124,10 @@ fun LoginPage(navController: NavController? = null) {
             ),
             shape = RectangleShape,
             onClick = {
-
+                navController?.navigate("dashboard") {
+                    popUpTo("login_page") { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         ) {
             Text(
@@ -147,7 +150,7 @@ fun LoginPage(navController: NavController? = null) {
             style = TextStyle(textDecoration = TextDecoration.Underline),
             fontSize = 16.sp,
             modifier = Modifier.clickable {
-                navController!!.navigate("register_page") {
+                navController?.navigate("register_page") {
                     popUpTo("login_page") { inclusive = true }
                     launchSingleTop = true
                 }
