@@ -1,21 +1,25 @@
 package com.tallbreadstick.penspecter.menus
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.tallbreadstick.penspecter.ui.theme.LightGray
+import androidx.navigation.NavController
+import com.tallbreadstick.penspecter.R
 import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 
 @Composable
-fun Navbar() {
+fun Navbar(navController: NavController?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -23,8 +27,16 @@ fun Navbar() {
             .padding(8.dp)
             .wrapContentSize(Alignment.CenterEnd)
     ) {
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "uh")
+        Box(
+            modifier = Modifier.size(50.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.settings),
+                contentDescription = "Settings",
+                modifier = Modifier.clickable {
+                    navController?.navigate("settings")
+                }
+            )
         }
     }
 }

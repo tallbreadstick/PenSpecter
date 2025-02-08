@@ -35,7 +35,7 @@ fun Dashboard(navController: NavController? = null) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Navbar()
+        Navbar(navController)
         Column(
             modifier = Modifier
                 .fillMaxSize()

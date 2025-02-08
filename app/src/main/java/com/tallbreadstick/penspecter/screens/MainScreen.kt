@@ -9,6 +9,7 @@ import com.tallbreadstick.penspecter.screens.application.Dashboard
 import com.tallbreadstick.penspecter.screens.auth.LoginPage
 import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
+import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 
 @Composable
@@ -27,6 +28,9 @@ fun MainScreen() {
             }
             composable("dashboard") {
                 Dashboard(navController)
+            }
+            composable("settings") {
+                SettingsPage(navController)
             }
         })
     }
