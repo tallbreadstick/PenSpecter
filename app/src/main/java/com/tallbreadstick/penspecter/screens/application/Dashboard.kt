@@ -48,7 +48,7 @@ fun Dashboard(navController: NavController? = null) {
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
                     text = "Diagnostic Tools",
@@ -99,7 +99,7 @@ fun Dashboard(navController: NavController? = null) {
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
                     text = "Reconnaissance Tools",
@@ -134,7 +134,7 @@ fun Dashboard(navController: NavController? = null) {
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
                     text = "Penetration Tools",
