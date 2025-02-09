@@ -1,20 +1,14 @@
 package com.tallbreadstick.penspecter.screens.application
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.wifi.ScanResult
-import android.net.wifi.WifiManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.menus.Navbar
+import com.tallbreadstick.penspecter.tools.scanWifiNetworks
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
 
@@ -40,7 +35,7 @@ import com.tallbreadstick.penspecter.ui.theme.DidactGothic
 @Composable
 fun DeviceDiscovery(navController: NavController? = null, context: Context? = null) {
     val sidebarOpen = remember { mutableStateOf(false) }
-    val wifiDevices = remember { mutableStateListOf<ScanResult>() }
+    val wifiNetworks = remember { mutableStateListOf<ScanResult>() }
     val bluetoothDevices = remember { mutableStateListOf<BluetoothDevice>() }
     val wifiPermissionRequest = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -48,8 +43,8 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
             if (granted) {
                 try {
                     scanWifiNetworks(context!!) { results ->
-                        wifiDevices.clear()
-                        wifiDevices.addAll(results)
+                        wifiNetworks.clear()
+                        wifiNetworks.addAll(results)
                     }
                 } catch (e: SecurityException) {
                     Log.d("PenSpecter", "No permission provided")
@@ -69,17 +64,18 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Internet Devices",
+                text = "Internet Networks",
                 fontFamily = DidactGothic,
                 fontSize = 24.sp,
                 color = Color.White
             )
             LazyColumn {
-                items(wifiDevices) { device ->
-                    Text(text = device.SSID.ifEmpty { "Hidden Network" })
+                items(wifiNetworks) { network ->
+                    Text(text = network.SSID.ifEmpty { "Hidden Network" })
                 }
             }
             Text(
@@ -88,27 +84,11 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
                 fontSize = 24.sp,
                 color = Color.White
             )
-            Column {
-
+            LazyColumn {
+                items(bluetoothDevices) { device ->
+                    Text(text = device.name)
+                }
             }
         }
     }
-}
-
-@RequiresPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
-fun scanWifiNetworks(context: Context, onResults: (List<ScanResult>) -> Unit) {
-    val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-    context.registerReceiver(
-        object : BroadcastReceiver() {
-            @SuppressLint("MissingPermission")
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) {
-                    val results = wifiManager.scanResults
-                    onResults(results)
-                }
-            }
-        },
-        IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
-    )
-    wifiManager.startScan()
 }
