@@ -1,6 +1,7 @@
 package com.tallbreadstick.penspecter.screens.application
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,7 +63,11 @@ fun Dashboard(navController: NavController? = null) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ToolIcon(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                navController?.navigate("device_discovery")
+                            },
                         resource = painterResource(R.drawable.device_discovery),
                         title = "Device Discovery"
                     )

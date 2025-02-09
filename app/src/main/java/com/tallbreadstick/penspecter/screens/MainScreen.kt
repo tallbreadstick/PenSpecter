@@ -2,10 +2,12 @@ package com.tallbreadstick.penspecter.screens
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tallbreadstick.penspecter.screens.application.Dashboard
+import com.tallbreadstick.penspecter.screens.application.DeviceDiscovery
 import com.tallbreadstick.penspecter.screens.auth.LoginPage
 import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
@@ -31,6 +33,9 @@ fun MainScreen() {
             }
             composable("settings") {
                 SettingsPage(navController)
+            }
+            composable("device_discovery") {
+                DeviceDiscovery(navController, LocalContext.current)
             }
         })
     }
