@@ -8,12 +8,17 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +35,7 @@ import com.tallbreadstick.penspecter.menus.Navbar
 import com.tallbreadstick.penspecter.tools.scanWifiNetworks
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
+import com.tallbreadstick.penspecter.ui.theme.Roboto
 
 @Preview
 @Composable
@@ -73,9 +79,25 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
                 fontSize = 24.sp,
                 color = Color.White
             )
-            LazyColumn {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 items(wifiNetworks) { network ->
-                    Text(text = network.SSID.ifEmpty { "Hidden Network" })
+                    Box(
+                        modifier = Modifier
+                            .border(2.dp, Color.Gray, shape = RoundedCornerShape(14.dp))
+                            .background(Color.DarkGray, shape = RoundedCornerShape(14.dp))
+                            .padding(10.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
+                        Text(
+                            text = network.SSID.ifEmpty { "Hidden Network" },
+                            color = Color.White,
+                            fontFamily = Roboto,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
             Text(
