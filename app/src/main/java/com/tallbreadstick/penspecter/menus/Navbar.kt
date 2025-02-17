@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -46,6 +47,21 @@ fun Navbar(navController: NavController?, sidebarOpen: MutableState<Boolean>? = 
             Spacer(modifier = Modifier.width(50.dp))
         }
         Spacer(modifier = Modifier.weight(1f))
+        Box(
+            modifier = Modifier.size(50.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.user_profile),
+                contentDescription = "User Profile",
+                modifier = Modifier
+                    .size(50.dp)
+                    .scale(1.5f)
+                    .clickable {
+                        navController?.navigate("user_profile")
+                    }
+            )
+        }
+        Spacer(modifier = Modifier.width(10.dp))
         Box(
             modifier = Modifier.size(50.dp)
         ) {

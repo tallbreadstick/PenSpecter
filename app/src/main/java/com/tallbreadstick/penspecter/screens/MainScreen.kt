@@ -9,9 +9,12 @@ import androidx.navigation.compose.rememberNavController
 import com.tallbreadstick.penspecter.screens.application.Dashboard
 import com.tallbreadstick.penspecter.screens.application.DeviceDiscovery
 import com.tallbreadstick.penspecter.screens.auth.LoginPage
+import com.tallbreadstick.penspecter.screens.auth.LogoutPage
 import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
+import com.tallbreadstick.penspecter.screens.user.DeveloperPage
 import com.tallbreadstick.penspecter.screens.user.SettingsPage
+import com.tallbreadstick.penspecter.screens.user.UserProfilePage
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 
 @Composable
@@ -20,19 +23,29 @@ fun MainScreen() {
     Surface(color = DarkGray) {
         NavHost(navController = navController, startDestination = "login_page", builder = {
             composable("login_page") {
-                LoginPage(navController)
+                LoginPage(navController, LocalContext.current)
             }
             composable("register_page") {
-                RegisterPage(navController)
+                RegisterPage(navController, LocalContext.current)
+            }
+            composable("logout_page") {
+                LogoutPage(navController, LocalContext.current)
             }
             composable("recovery_page") {
                 RecoveryPage(navController)
             }
+            // dashboard is the same as landing
             composable("dashboard") {
                 Dashboard(navController)
             }
             composable("settings") {
                 SettingsPage(navController)
+            }
+            composable("user_profile") {
+                UserProfilePage(navController, LocalContext.current)
+            }
+            composable("developer_page") {
+                DeveloperPage(navController)
             }
             composable("device_discovery") {
                 DeviceDiscovery(navController, LocalContext.current)
