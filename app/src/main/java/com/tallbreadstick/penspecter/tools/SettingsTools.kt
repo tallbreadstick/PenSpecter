@@ -33,7 +33,8 @@ data class SettingsEntity(
     var liveFeeds: Boolean,
     var dictionaryAttack: Boolean,
     var permutationAttack: Boolean,
+    var darkMode: Boolean,
+    var vpn: Boolean,
+    var root: Boolean
 
-
-
-    )
+)

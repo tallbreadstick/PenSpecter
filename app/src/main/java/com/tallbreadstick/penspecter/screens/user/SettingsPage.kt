@@ -53,21 +53,11 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
         "ip_geolocator" to remember { mutableStateOf(settings.ipGeolocator) },
         "live_feeds" to remember { mutableStateOf(settings.liveFeeds) },
         "dictionary_attack" to remember { mutableStateOf(settings.dictionaryAttack) },
-        "permutation_attack" to remember { mutableStateOf(settings.permutationAttack) }
+        "permutation_attack" to remember { mutableStateOf(settings.permutationAttack) },
+        "dark_mode" to remember { mutableStateOf(settings.darkMode) },
+        "vpn" to remember { mutableStateOf(settings.vpn) },
+        "root" to remember { mutableStateOf(settings.root) },
     )
-
-    // appearance
-    val darkMode = remember {
-        mutableStateOf(true)
-    }
-
-    // security
-    val vpn = remember {
-        mutableStateOf(false)
-    }
-    val root = remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(navController) {
         navController?.addOnDestinationChangedListener { _, _, _ ->
@@ -82,7 +72,10 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
                     ipGeolocator = featureSettings["ip_geolocator"]!!.value,
                     liveFeeds = featureSettings["live_feeds"]!!.value,
                     dictionaryAttack = featureSettings["dictionary_attack"]!!.value,
-                    permutationAttack = featureSettings["permutation_attack"]!!.value
+                    permutationAttack = featureSettings["permutation_attack"]!!.value,
+                    darkMode = featureSettings["dark_mode"]!!.value,
+                    vpn = featureSettings["vpn"]!!.value,
+                    root = featureSettings["root"]!!.value
                 )
             }
         }
@@ -135,14 +128,14 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsSection(title = "Appearance") {
-                SettingItem(text = "Enable Dark Mode", checkState = darkMode)
+                SettingItem(text = "Enable Dark Mode", checkState = featureSettings["dark_mode"]!!)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsSection(title = "Security") {
-                SettingItem(text = "Enable VPN", checkState = vpn)
-                SettingItem(text = "Enable Root", checkState = root)
+                SettingItem(text = "Enable VPN", checkState = featureSettings["vpn"]!!)
+                SettingItem(text = "Enable Root", checkState = featureSettings["root"]!!)
             }
 
             Spacer(modifier = Modifier.height(16.dp))

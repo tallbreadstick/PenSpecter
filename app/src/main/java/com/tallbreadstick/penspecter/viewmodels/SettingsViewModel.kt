@@ -26,7 +26,10 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
             ipGeolocator = true,
             liveFeeds = true,
             dictionaryAttack = true,
-            permutationAttack = true
+            permutationAttack = true,
+            darkMode = true,
+            vpn = false,
+            root = false
         )
     )
 

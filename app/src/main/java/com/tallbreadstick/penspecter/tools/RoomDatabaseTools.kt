@@ -17,7 +17,9 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "app_database"
-            ).build()
+            )
+                .fallbackToDestructiveMigration()
+                .build()
             INSTANCE = instance
             instance
         }
@@ -25,7 +27,7 @@ object DatabaseProvider {
 
 }
 
-@Database(entities = [SettingsEntity::class], version = 1, exportSchema = false)
+@Database(entities = [SettingsEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun settingsDao(): SettingsDao
