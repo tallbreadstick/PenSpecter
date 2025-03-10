@@ -36,40 +36,19 @@ import com.tallbreadstick.penspecter.ui.theme.DidactGothic
 fun SettingsPage(navController: NavController? = null) {
 
     // diagnostic tools
-    val deviceDiscovery = remember {
-        mutableStateOf(true)
-    }
-    val traceroute = remember {
-        mutableStateOf(false)
-    }
-    val packetAnalyzer = remember {
-        mutableStateOf(false)
-    }
-    val dnsLookup = remember {
-        mutableStateOf(true)
-    }
-    val wifiAnalyzer = remember {
-        mutableStateOf(true)
-    }
-
-    // reconnaissance tools
-    val webScraper = remember {
-        mutableStateOf(true)
-    }
-    val ipGeolocator = remember {
-        mutableStateOf(true)
-    }
-    val liveFeeds = remember {
-        mutableStateOf(true)
-    }
-
-    // penetration tools
-    val dictionary = remember {
-        mutableStateOf(true)
-    }
-    val permutation = remember {
-        mutableStateOf(true)
-    }
+    val featureSettings = mapOf(
+        "device_discovery" to remember { mutableStateOf(true) },
+        "traceroute" to remember { mutableStateOf(false) },
+        "packet_analyzer" to remember { mutableStateOf(false) },
+        "dns_lookup" to remember { mutableStateOf(true) },
+        "wifi_analyzer" to remember { mutableStateOf(true) },
+        "web_scraper" to remember { mutableStateOf(true) },
+        "ip_geolocator" to remember { mutableStateOf(true) },
+        "live_feeds" to remember { mutableStateOf(true) },
+        "wifi_analyzer" to remember { mutableStateOf(true) },
+        "dictionary_attack" to remember { mutableStateOf(true) },
+        "permutation_attack" to remember { mutableStateOf(true) }
+    )
 
     // appearance
     val darkMode = remember {
@@ -106,26 +85,26 @@ fun SettingsPage(navController: NavController? = null) {
             Spacer(modifier = Modifier.height(24.dp))
 
             SettingsSection(title = "Diagnostic Tools") {
-                SettingItem(text = "Enable Device Discovery", checkState = deviceDiscovery)
-                SettingItem(text = "Enable Traceroute", checkState = traceroute)
-                SettingItem(text = "Enable Packet Analyzer", checkState = packetAnalyzer)
-                SettingItem(text = "Enable DNS Lookup", checkState = dnsLookup)
-                SettingItem(text = "Enable WiFi Analyzer", checkState = wifiAnalyzer)
+                SettingItem(text = "Enable Device Discovery", checkState = featureSettings["device_discovery"]!!)
+                SettingItem(text = "Enable Traceroute", checkState = featureSettings["traceroute"]!!)
+                SettingItem(text = "Enable Packet Analyzer", checkState = featureSettings["packet_analyzer"]!!)
+                SettingItem(text = "Enable DNS Lookup", checkState = featureSettings["dns_lookup"]!!)
+                SettingItem(text = "Enable WiFi Analyzer", checkState = featureSettings["wifi_analyzer"]!!)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsSection(title = "Reconnaissance Tools") {
-                SettingItem(text = "Enable Web Scraper", checkState = webScraper)
-                SettingItem(text = "Enable IP Geolocator", checkState = ipGeolocator)
-                SettingItem(text = "Enable Live Feeds", checkState = liveFeeds)
+                SettingItem(text = "Enable Web Scraper", checkState = featureSettings["web_scraper"]!!)
+                SettingItem(text = "Enable IP Geolocator", checkState = featureSettings["ip_geolocator"]!!)
+                SettingItem(text = "Enable Live Feeds", checkState = featureSettings["live_feeds"]!!)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsSection(title = "Penetration Tools") {
-                SettingItem(text = "Enable Dictionary Attack", checkState = dictionary)
-                SettingItem(text = "Enable Permutation Attack", checkState = permutation)
+                SettingItem(text = "Enable Dictionary Attack", checkState = featureSettings["dictionary_attack"]!!)
+                SettingItem(text = "Enable Permutation Attack", checkState = featureSettings["permutation_attack"]!!)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
