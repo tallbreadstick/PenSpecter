@@ -15,6 +15,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,29 +28,32 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.AndroidViewModel
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.components.SettingItem
 import com.tallbreadstick.penspecter.components.SettingsSection
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
+import com.tallbreadstick.penspecter.viewmodels.SettingsViewModel
 
 @Preview
 @Composable
-fun SettingsPage(navController: NavController? = null) {
+fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewModel? = null) {
+
+    val settings by viewModel!!.settings.collectAsState()
 
     // diagnostic tools
     val featureSettings = mapOf(
-        "device_discovery" to remember { mutableStateOf(true) },
-        "traceroute" to remember { mutableStateOf(false) },
-        "packet_analyzer" to remember { mutableStateOf(false) },
-        "dns_lookup" to remember { mutableStateOf(true) },
-        "wifi_analyzer" to remember { mutableStateOf(true) },
-        "web_scraper" to remember { mutableStateOf(true) },
-        "ip_geolocator" to remember { mutableStateOf(true) },
-        "live_feeds" to remember { mutableStateOf(true) },
-        "wifi_analyzer" to remember { mutableStateOf(true) },
-        "dictionary_attack" to remember { mutableStateOf(true) },
-        "permutation_attack" to remember { mutableStateOf(true) }
+        "device_discovery" to remember { mutableStateOf(settings.deviceDiscovery) },
+        "traceroute" to remember { mutableStateOf(settings.traceroute) },
+        "packet_analyzer" to remember { mutableStateOf(settings.packetAnalyzer) },
+        "dns_lookup" to remember { mutableStateOf(settings.dnsLookup) },
+        "wifi_analyzer" to remember { mutableStateOf(settings.wifiAnalyzer) },
+        "web_scraper" to remember { mutableStateOf(settings.webScraper) },
+        "ip_geolocator" to remember { mutableStateOf(settings.ipGeolocator) },
+        "live_feeds" to remember { mutableStateOf(settings.liveFeeds) },
+        "dictionary_attack" to remember { mutableStateOf(settings.dictionaryAttack) },
+        "permutation_attack" to remember { mutableStateOf(settings.permutationAttack) }
     )
 
     // appearance
@@ -61,6 +67,25 @@ fun SettingsPage(navController: NavController? = null) {
     }
     val root = remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(navController) {
+        navController?.addOnDestinationChangedListener { _, _, _ ->
+            viewModel!!.updateSetting { currentSettings ->
+                currentSettings.copy(
+                    deviceDiscovery = featureSettings["device_discovery"]!!.value,
+                    traceroute = featureSettings["traceroute"]!!.value,
+                    packetAnalyzer = featureSettings["packet_analyzer"]!!.value,
+                    dnsLookup = featureSettings["dns_lookup"]!!.value,
+                    wifiAnalyzer = featureSettings["wifi_analyzer"]!!.value,
+                    webScraper = featureSettings["web_scraper"]!!.value,
+                    ipGeolocator = featureSettings["ip_geolocator"]!!.value,
+                    liveFeeds = featureSettings["live_feeds"]!!.value,
+                    dictionaryAttack = featureSettings["dictionary_attack"]!!.value,
+                    permutationAttack = featureSettings["permutation_attack"]!!.value
+                )
+            }
+        }
     }
 
     Box(

@@ -3,6 +3,7 @@ package com.tallbreadstick.penspecter.screens
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,10 +17,12 @@ import com.tallbreadstick.penspecter.screens.user.DeveloperPage
 import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.screens.user.UserProfilePage
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
+import com.tallbreadstick.penspecter.viewmodels.SettingsViewModel
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+    val settingsViewModel: SettingsViewModel = viewModel()
     Surface(color = DarkGray) {
         NavHost(navController = navController, startDestination = "login_page", builder = {
             composable("login_page") {
@@ -39,7 +42,7 @@ fun MainScreen() {
                 Dashboard(navController)
             }
             composable("settings") {
-                SettingsPage(navController)
+                SettingsPage(navController, settingsViewModel)
             }
             composable("user_profile") {
                 UserProfilePage(navController, LocalContext.current)
