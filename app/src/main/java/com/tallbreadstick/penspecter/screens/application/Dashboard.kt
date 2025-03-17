@@ -87,7 +87,11 @@ fun Dashboard(navController: NavController? = null) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ToolIcon(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                navController?.navigate("dns_lookup")
+                            },
                         resource = painterResource(R.drawable.dns_lookup),
                         title = "DNS Lookup"
                     )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.menus.Navbar
+import com.tallbreadstick.penspecter.tools.EncryptionStatus
+import com.tallbreadstick.penspecter.tools.getSecurityColor
+import com.tallbreadstick.penspecter.tools.getSecurityLevel
 import com.tallbreadstick.penspecter.tools.runSecuritySweep
 import com.tallbreadstick.penspecter.tools.scanWifiNetworks
 import com.tallbreadstick.penspecter.tools.scanBluetoothDevices
@@ -44,8 +48,7 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
     val wifiNetworks = remember { mutableStateListOf<ScanResult>() }
     val bluetoothDevices = remember { mutableStateListOf<BluetoothDevice>() }
 
-    // 🔹 Security report state
-    var securityReport by remember { mutableStateOf("") }
+    var securityReport by remember { mutableStateOf(listOf<EncryptionStatus>()) }
     var showDialog by remember { mutableStateOf(false) } // Controls popup visibility
 
     val wifiPermissionRequest = rememberLauncherForActivityResult(
@@ -169,29 +172,61 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color(0xFF424242), shape = RoundedCornerShape(12.dp)) // Dark gray background
-                        .padding(16.dp)
+                        .padding(8.dp)
                 ) {
-                    Text(
-                        text = securityReport,
-                        color = Color.White,
-                        fontFamily = Roboto,
-                        fontSize = 16.sp
-                    )
+                    LazyColumn {
+                        items(securityReport) { status ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = status.ssid,
+                                    color = Color.White,
+                                    fontFamily = Roboto,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.weight(2f)
+                                )
+                                Text(
+                                    text = status.securityType,
+                                    color = Color.White,
+                                    fontFamily = Roboto,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Text(
+                                    text = getSecurityLevel(status.securityType),
+                                    color = getSecurityColor(status.securityType),
+                                    fontFamily = Roboto,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Divider(color = Color.Gray, thickness = 1.dp)
+                        }
+                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = { showDialog = false },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PaleBlue, // Same as your main app buttons
+                        containerColor = PaleBlue,
                         contentColor = DarkGray
-                    )
+                    ),
+                    shape = RectangleShape
                 ) {
-                    Text("Close", fontWeight = FontWeight.Bold)
+                    Text("Close",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             },
-            containerColor = Color(0xFF424242), // Dark gray background
-            shape = RoundedCornerShape(16.dp) // Rounded corners for a cleaner look
+            containerColor = Color(0xFF424242),
+            shape = RoundedCornerShape(16.dp)
         )
     }
 }

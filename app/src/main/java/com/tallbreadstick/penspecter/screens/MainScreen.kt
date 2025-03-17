@@ -13,6 +13,7 @@ import com.tallbreadstick.penspecter.screens.auth.LoginPage
 import com.tallbreadstick.penspecter.screens.auth.LogoutPage
 import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
+import com.tallbreadstick.penspecter.screens.dns.DNSLookup
 import com.tallbreadstick.penspecter.screens.user.DeveloperPage
 import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.screens.user.UserProfilePage
@@ -25,6 +26,8 @@ fun MainScreen() {
     val settingsViewModel: SettingsViewModel = viewModel()
     Surface(color = DarkGray) {
         NavHost(navController = navController, startDestination = "login_page", builder = {
+
+            // Auth Pages
             composable("login_page") {
                 LoginPage(navController, LocalContext.current)
             }
@@ -37,7 +40,8 @@ fun MainScreen() {
             composable("recovery_page") {
                 RecoveryPage(navController)
             }
-            // dashboard is the same as landing
+
+            // Control Pages
             composable("dashboard") {
                 Dashboard(navController)
             }
@@ -50,9 +54,15 @@ fun MainScreen() {
             composable("developer_page") {
                 DeveloperPage(navController)
             }
+
+            // Feature Pages
             composable("device_discovery") {
                 DeviceDiscovery(navController, LocalContext.current)
             }
+            composable("dns_lookup") {
+                DNSLookup(navController)
+            }
+
         })
     }
 }

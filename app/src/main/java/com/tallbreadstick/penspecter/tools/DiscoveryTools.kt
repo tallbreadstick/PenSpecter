@@ -14,11 +14,34 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
 
 private const val TAG = "DiscoveryTools"
 
-// 🔹 Scan for Wi-Fi networks
+data class EncryptionStatus(
+    val ssid: String,
+    val securityType: String
+)
+
+fun getSecurityLevel(securityType: String): String {
+    return when (securityType.lowercase()) {
+        "wpa3", "wpa2" -> "Secure"
+        "wpa", "wep" -> "At Risk"
+        "open" -> "Unsecure"
+        else -> "Unknown"
+    }
+}
+
+fun getSecurityColor(securityType: String): Color {
+    return when (securityType.lowercase()) {
+        "wpa3", "wpa2" -> Color.Green
+        "wpa", "wep" -> Color.Yellow
+        "open" -> Color.Red
+        else -> Color.Gray
+    }
+}
+
 @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
 fun scanWifiNetworks(context: Context, onResults: (List<ScanResult>) -> Unit) {
     val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -40,7 +63,6 @@ fun scanWifiNetworks(context: Context, onResults: (List<ScanResult>) -> Unit) {
     Log.d(TAG, "Started Wi-Fi scan")
 }
 
-// 🔹 Scan for Bluetooth devices
 fun scanBluetoothDevices(context: Context, onDeviceFound: (BluetoothDevice) -> Unit) {
     val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
@@ -58,13 +80,6 @@ fun scanBluetoothDevices(context: Context, onDeviceFound: (BluetoothDevice) -> U
                             Manifest.permission.BLUETOOTH_CONNECT
                         ) != PackageManager.PERMISSION_GRANTED
                     ) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
                         return
                     }
                     Log.d(TAG, "Discovered Bluetooth Device: ${it.name ?: "Unknown"} - ${it.address}")
@@ -83,7 +98,6 @@ fun scanBluetoothDevices(context: Context, onDeviceFound: (BluetoothDevice) -> U
     }
     context.registerReceiver(receiver, filter)
 
-    // 🔹 Request correct permissions based on API level
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // API 31+
         if (context.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             bluetoothAdapter.startDiscovery()
@@ -97,23 +111,19 @@ fun scanBluetoothDevices(context: Context, onDeviceFound: (BluetoothDevice) -> U
     }
 }
 
-fun runSecuritySweep(wifiNetworks: List<ScanResult>, onReportGenerated: (String) -> Unit) {
-    val report = StringBuilder()
-    report.append("🔍 Security Sweep Report:\n")
-
+fun runSecuritySweep(wifiNetworks: List<ScanResult>, onReportGenerated: (List<EncryptionStatus>) -> Unit) {
+    val report = mutableListOf<EncryptionStatus>()
     for (network in wifiNetworks) {
         val ssid = network.SSID.ifEmpty { "Hidden Network" }
         val securityType = analyzeSecurityType(network.capabilities)
-
         when (securityType) {
-            "OPEN" -> report.append("❌ $ssid - Open Network (Unsecured!)\n")
-            "WEP" -> report.append("⚠️ $ssid - Uses WEP (Weak Security!)\n")
-            "WPA2/WPA3" -> report.append("✅ $ssid - Secure\n")
-            else -> report.append("❓ $ssid - Unknown Security Type\n")
+            "OPEN" -> report.add(EncryptionStatus(ssid, "OPEN"))
+            "WEP" -> report.add(EncryptionStatus(ssid, "WEP"))
+            "WPA2/WPA3" -> report.add(EncryptionStatus(ssid, "WPA2/WPA3"))
+            else -> report.add(EncryptionStatus(ssid, "Unknown"))
         }
     }
-
-    onReportGenerated(report.toString())
+    onReportGenerated(report)
 }
 
 // Helper function to determine encryption type
