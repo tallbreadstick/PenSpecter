@@ -20,19 +20,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.menus.Navbar
+import com.tallbreadstick.penspecter.ui.theme.VeryDarkGray
 
 @Preview
 @Composable
 fun DNSLookup(navController: NavController? = null) {
 
     val sidebarOpen = remember { mutableStateOf(false) }
-    val queryType = remember { mutableStateOf("A") }
+    val queryTypes = listOf("RESOLVE", "REVERSE", "SUBDOMAINS")
+    val queryType = remember { mutableStateOf("RESOLVE") }
     val domain = remember { mutableStateOf("") }
-    val result = remember { mutableStateOf("Fetching results...") }
+    val result = remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+    var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -50,34 +55,55 @@ fun DNSLookup(navController: NavController? = null) {
                     .weight(1f)
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
-                    .background(Color.Black, RoundedCornerShape(8.dp))
+                    .background(VeryDarkGray, RoundedCornerShape(8.dp))
                     .padding(16.dp)
             ) {
                 Text(result.value, color = Color.White, fontSize = 16.sp)
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(DarkGray)
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Bottom,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        value = domain.value,
+                        onValueChange = { domain.value = it },
+                        textStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontFamily = Roboto),
+                        placeholder = {
+                            Text("Enter domain or address", fontSize = 16.sp, fontFamily = Roboto, color = Color.LightGray)
+                        },
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.DarkGray,
+                            focusedContainerColor = Color.DarkGray
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
                             .background(Color.DarkGray, RoundedCornerShape(4.dp))
                             .padding(8.dp)
-                            .clickable { /* Expand dropdown logic */ },
-                        contentAlignment = Alignment.Center
+                            .weight(2f)
+                            .clickable { expanded = true }
                     ) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 text = queryType.value,
@@ -88,32 +114,34 @@ fun DNSLookup(navController: NavController? = null) {
                             )
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
                         }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            queryTypes.forEach { type ->
+                                DropdownMenuItem(
+                                    text = { Text(type) },
+                                    onClick = {
+                                        queryType.value = type
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
-
-                    TextField(
-                        value = domain.value,
-                        onValueChange = { domain.value = it },
-                        textStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontFamily = Roboto),
-                        placeholder = {
-                            Text("Enter domain", fontSize = 16.sp, fontFamily = Roboto, color = Color.LightGray)
-                        },
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.DarkGray,
-                            focusedContainerColor = Color.DarkGray
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 8.dp)
-                    )
-
                     Button(
                         colors = ButtonDefaults.buttonColors(containerColor = PaleBlue, contentColor = DarkGray),
                         shape = RectangleShape,
                         onClick = {
                             result.value = "Looking up ${domain.value}..."
-                        }
+                        },
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Text("Lookup", fontFamily = Roboto, fontSize = 16.sp)
+                        Text("Lookup",
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }
