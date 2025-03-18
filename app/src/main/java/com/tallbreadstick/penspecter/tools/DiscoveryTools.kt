@@ -26,7 +26,7 @@ data class EncryptionStatus(
 
 fun getSecurityLevel(securityType: String): String {
     return when (securityType.lowercase()) {
-        "wpa3", "wpa2" -> "Secure"
+        "wpa3", "wpa2", "wpa2/wpa3" -> "Secure"
         "wpa", "wep" -> "At Risk"
         "open" -> "Unsecure"
         else -> "Unknown"
@@ -35,7 +35,7 @@ fun getSecurityLevel(securityType: String): String {
 
 fun getSecurityColor(securityType: String): Color {
     return when (securityType.lowercase()) {
-        "wpa3", "wpa2" -> Color.Green
+        "wpa3", "wpa2", "wpa2/wpa3" -> Color.Green
         "wpa", "wep" -> Color.Yellow
         "open" -> Color.Red
         else -> Color.Gray

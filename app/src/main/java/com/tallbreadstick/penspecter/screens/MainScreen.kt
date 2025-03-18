@@ -18,12 +18,14 @@ import com.tallbreadstick.penspecter.screens.user.DeveloperPage
 import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.screens.user.UserProfilePage
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
+import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
 import com.tallbreadstick.penspecter.viewmodels.SettingsViewModel
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
     val settingsViewModel: SettingsViewModel = viewModel()
+    val dnsViewModel: DNSViewModel = viewModel()
     Surface(color = DarkGray) {
         NavHost(navController = navController, startDestination = "login_page", builder = {
 
@@ -60,7 +62,7 @@ fun MainScreen() {
                 DeviceDiscovery(navController, LocalContext.current)
             }
             composable("dns_lookup") {
-                DNSLookup(navController)
+                DNSLookup(navController, dnsViewModel)
             }
 
         })

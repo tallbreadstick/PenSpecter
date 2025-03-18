@@ -26,10 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.menus.Navbar
 import com.tallbreadstick.penspecter.ui.theme.VeryDarkGray
+import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
 
 @Preview
 @Composable
-fun DNSLookup(navController: NavController? = null) {
+fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = null) {
 
     val sidebarOpen = remember { mutableStateOf(false) }
     val queryTypes = listOf("RESOLVE", "REVERSE", "SUBDOMAINS")
@@ -97,7 +98,7 @@ fun DNSLookup(navController: NavController? = null) {
                         modifier = Modifier
                             .background(Color.DarkGray, RoundedCornerShape(4.dp))
                             .padding(8.dp)
-                            .weight(2f)
+                            .weight(1.5f)
                             .clickable { expanded = true }
                     ) {
                         Row(
@@ -133,7 +134,17 @@ fun DNSLookup(navController: NavController? = null) {
                         colors = ButtonDefaults.buttonColors(containerColor = PaleBlue, contentColor = DarkGray),
                         shape = RectangleShape,
                         onClick = {
-                            result.value = "Looking up ${domain.value}..."
+                            when {
+                                queryType.value == "RESOLVE" -> {
+                                    result.value = "Looking up domains: ${domain.value}"
+                                    viewModel?.fetchDns(domain.value) {
+                                        result.value = it
+                                    }
+                                }
+                                else -> {
+                                    result.value = "Unknown query type!"
+                                }
+                            }
                         },
                         modifier = Modifier.weight(1f)
                     ) {
