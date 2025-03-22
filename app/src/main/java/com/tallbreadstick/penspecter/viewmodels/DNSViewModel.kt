@@ -7,7 +7,8 @@ import com.tallbreadstick.penspecter.tools.api.getApiKey
 import kotlinx.coroutines.launch
 
 class DNSViewModel : ViewModel() {
-    fun fetchDns(hostnames: String, onResult: (String) -> Unit) {
+
+    fun fetchResolvedDns(hostnames: String, onResult: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = RetrofitClient.apiService.resolveDns(hostnames, getApiKey())
@@ -18,4 +19,22 @@ class DNSViewModel : ViewModel() {
             }
         }
     }
+
+    fun fetchReversedDns(ips: String, onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.apiService.reverseDns(ips, getApiKey())
+
+                val result = response?.entries
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.joinToString("\n") { "${it.key}: ${it.value.joinToString(", ")}" }
+                    ?: "No results found for IPs: $ips"
+
+                onResult(result)
+            } catch (e: Exception) {
+                onResult("Error: ${e.message}")
+            }
+        }
+    }
+
 }

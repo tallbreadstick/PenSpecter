@@ -24,7 +24,14 @@ interface DNSLookupService {
         @Query("hostnames") hostnames: String,
         @Query("key") apiKey: String
     ): Map<String, String>
+
+    @GET("dns/reverse")
+    suspend fun reverseDns(
+        @Query("ips") ips: String,
+        @Query("key") apiKey: String
+    ): Map<String, List<String>>
 }
+
 
 object RetrofitClient {
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

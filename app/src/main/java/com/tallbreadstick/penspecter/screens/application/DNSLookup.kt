@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.menus.Navbar
@@ -134,10 +133,16 @@ fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = n
                         colors = ButtonDefaults.buttonColors(containerColor = PaleBlue, contentColor = DarkGray),
                         shape = RectangleShape,
                         onClick = {
-                            when {
-                                queryType.value == "RESOLVE" -> {
+                            when (queryType.value) {
+                                "RESOLVE" -> {
                                     result.value = "Looking up domains: ${domain.value}"
-                                    viewModel?.fetchDns(domain.value) {
+                                    viewModel?.fetchResolvedDns(domain.value) {
+                                        result.value = it
+                                    }
+                                }
+                                "REVERSE" -> {
+                                    result.value = "Looking up reverse DNS for: ${domain.value}"
+                                    viewModel?.fetchReversedDns(domain.value) {
                                         result.value = it
                                     }
                                 }
