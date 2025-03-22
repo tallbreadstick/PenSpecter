@@ -1,11 +1,13 @@
 package com.tallbreadstick.penspecter.tools.api
 
+import com.tallbreadstick.penspecter.models.DomainInfoResponse
 import io.github.cdimascio.dotenv.dotenv
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 val ShodanBaseUrl: String = "https://api.shodan.io/"
@@ -30,6 +32,16 @@ interface DNSLookupService {
         @Query("ips") ips: String,
         @Query("key") apiKey: String
     ): Map<String, List<String>>
+
+    @GET("dns/domain/{domain}")
+    suspend fun getDomainInfo(
+        @Path("domain") domain: String,
+        @Query("key") apiKey: String,
+        @Query("history") history: Boolean = false,
+        @Query("type") type: String? = null,
+        @Query("page") page: Int = 1
+    ): DomainInfoResponse
+
 }
 
 

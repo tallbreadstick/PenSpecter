@@ -72,7 +72,11 @@ fun Dashboard(navController: NavController? = null) {
                         title = "Device Discovery"
                     )
                     ToolIcon(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                navController?.navigate("traceroute")
+                            },
                         resource = painterResource(R.drawable.traceroute),
                         title = "Traceroute"
                     )

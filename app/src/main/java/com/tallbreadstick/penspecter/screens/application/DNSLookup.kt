@@ -1,4 +1,4 @@
-package com.tallbreadstick.penspecter.screens.dns
+package com.tallbreadstick.penspecter.screens.application
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,10 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.menus.Navbar
+import com.tallbreadstick.penspecter.models.DomainInfoResponse
 import com.tallbreadstick.penspecter.ui.theme.VeryDarkGray
 import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
 
@@ -32,12 +36,14 @@ import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
 fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = null) {
 
     val sidebarOpen = remember { mutableStateOf(false) }
-    val queryTypes = listOf("RESOLVE", "REVERSE", "SUBDOMAINS")
+    val queryTypes = listOf("RESOLVE", "REVERSE", "INFO")
     val queryType = remember { mutableStateOf("RESOLVE") }
     val domain = remember { mutableStateOf("") }
-    val result = remember { mutableStateOf("") }
+    val domainInfo = remember { mutableStateOf<DomainInfoResponse?>(null) }
+    val resultList = remember { mutableStateListOf<Pair<String, String?>>() }
     val scrollState = rememberScrollState()
     var expanded by remember { mutableStateOf(false) }
+    val isLoading = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -58,7 +64,14 @@ fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = n
                     .background(VeryDarkGray, RoundedCornerShape(8.dp))
                     .padding(16.dp)
             ) {
-                Text(result.value, color = Color.White, fontSize = 16.sp)
+                if (resultList.isNotEmpty()) {
+                    StyledDnsResult(resultList)
+                } else if (domainInfo.value != null) {
+                    StyledDomainInfo(domainInfo.value!!)
+                } else {
+                    Text(if (isLoading.value) "Searching..." else "No Results", color = Color.White, fontSize = 16.sp)
+                }
+
             }
             Spacer(modifier = Modifier.height(8.dp))
             Column(
@@ -133,27 +146,41 @@ fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = n
                         colors = ButtonDefaults.buttonColors(containerColor = PaleBlue, contentColor = DarkGray),
                         shape = RectangleShape,
                         onClick = {
+                            resultList.clear()
+                            isLoading.value = true
                             when (queryType.value) {
                                 "RESOLVE" -> {
-                                    result.value = "Looking up domains: ${domain.value}"
-                                    viewModel?.fetchResolvedDns(domain.value) {
-                                        result.value = it
+                                    viewModel?.fetchResolvedDns(domain.value) { result ->
+                                        resultList.addAll(result)
+                                        isLoading.value = false;
                                     }
                                 }
                                 "REVERSE" -> {
-                                    result.value = "Looking up reverse DNS for: ${domain.value}"
-                                    viewModel?.fetchReversedDns(domain.value) {
-                                        result.value = it
+                                    viewModel?.fetchReversedDns(domain.value) { result ->
+                                        resultList.addAll(result)
+                                        isLoading.value = false;
+                                    }
+                                }
+                                "INFO" -> {
+                                    viewModel?.fetchDomainInfo(domain.value) { result ->
+                                        result?.let {
+                                            domainInfo.value = it // Store the result in a state variable
+                                        } ?: run {
+                                            resultList.add("Error" to "Failed to fetch domain info")
+                                        }
+                                        isLoading.value = false
                                     }
                                 }
                                 else -> {
-                                    result.value = "Unknown query type!"
+                                    resultList.add("Error" to "Unknown query type!")
+                                    isLoading.value = false;
                                 }
                             }
                         },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Lookup",
+                        Text(
+                            "Lookup",
                             fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
@@ -161,6 +188,56 @@ fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = n
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun StyledDnsResult(results: List<Pair<String, String?>>) {
+    Column {
+        results.forEach { (key, value) ->
+            val isError = key == "Error" || value == null || value == "null"
+
+            Text(
+                buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color(0xFFFFA500))) { // Orange for keys
+                        append("$key: ")
+                    }
+                    withStyle(style = SpanStyle(color = if (isError) Color.Red else Color(0xFF00FF00))) { // Red for errors, Green for normal values
+                        append(value ?: "null")
+                    }
+                },
+                fontSize = 16.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun StyledDomainInfo(domainInfo: DomainInfoResponse) {
+    Column {
+        Text("Domain: ${domainInfo.domain}", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+
+        if (!domainInfo.tags.isNullOrEmpty()) {
+            Text("Tags: ${domainInfo.tags.joinToString(", ")}", fontSize = 16.sp, color = Color.Cyan)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Subdomains:", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Magenta)
+        domainInfo.subdomains?.forEach { subdomain ->
+            Text("- $subdomain", fontSize = 14.sp, color = Color.LightGray)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("DNS Records:", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Green)
+        domainInfo.data.forEach { entry ->
+            Text(
+                "${entry.type} - ${entry.subdomain}: ${entry.value}",
+                fontSize = 14.sp,
+                color = Color.Yellow
+            )
         }
     }
 }
