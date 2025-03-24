@@ -1,4 +1,4 @@
-package com.tallbreadstick.penspecter.screens.application
+package com.tallbreadstick.penspecter.screens.application.diagnostic
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

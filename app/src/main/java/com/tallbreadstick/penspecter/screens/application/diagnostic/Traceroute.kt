@@ -1,4 +1,4 @@
-package com.tallbreadstick.penspecter.screens.application
+package com.tallbreadstick.penspecter.screens.application.diagnostic
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -98,7 +98,7 @@ fun Traceroute(navController: NavController? = null) {
                         isLoading.value = true
                         coroutineScope.launch {
                             runTraceroute(targetHost.value, { result ->
-                                resultList.add(result) // ✅ Add results in real-time from Composable scope
+                                resultList.add(result)
                             }, isLoading)
                         }
                     }

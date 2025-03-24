@@ -11,22 +11,22 @@ suspend fun runTraceroute(
     isLoading: MutableState<Boolean>
 ) {
     try {
-        for (ttl in 1..60) { // Max 10 hops
-            val command = "ping -c 1 -t $ttl $host" // Send one packet per hop
+        for (ttl in 1..60) {
+            val command = "ping -c 1 -t $ttl $host"
             val process = ProcessBuilder()
                 .command("sh", "-c", command)
                 .redirectErrorStream(true)
                 .start()
 
             val reader = BufferedReader(InputStreamReader(process.inputStream))
-            var hopResult = "" // Declare outside to maintain scope
+            var hopResult = ""
 
             reader.useLines { lines ->
                 lines.forEach { line ->
                     val parsedResult = parsePingOutput(line, ttl)
                     if (parsedResult.isNotEmpty()) {
                         hopResult = parsedResult
-                        updateResults(hopResult) // ✅ Push results live to UI
+                        updateResults(hopResult)
                     }
                 }
             }

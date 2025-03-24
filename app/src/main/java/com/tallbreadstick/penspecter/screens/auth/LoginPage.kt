@@ -72,7 +72,7 @@ fun LoginPage(navController: NavController? = null, context: Context? = null) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Login",
+            text = "PenSpecter",
             fontFamily = DidactGothic,
             fontSize = 48.sp,
             color = Color.White,
@@ -109,37 +109,7 @@ fun LoginPage(navController: NavController? = null, context: Context? = null) {
                 .fillMaxWidth(0.75f)
                 .horizontalScroll(usernameScroll)
         )
-        TextField(
-            value = password.value,
-            maxLines = 1,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 20.sp,
-                fontFamily = Roboto
-            ),
-            placeholder = {
-                Text(
-                    text = "Password",
-                    fontSize = 20.sp,
-                    fontFamily = Roboto,
-                    color = Color.LightGray
-                )
-            },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.DarkGray,
-                focusedContainerColor = Color.DarkGray
-            ),
-            onValueChange = { newText ->
-                if (newText.length <= 32) {
-                    password.value = newText
-                } else {
-                    Toast.makeText(context, "Password cannot be more than 32 characters!", Toast.LENGTH_LONG).show()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.75f)
-                .horizontalScroll(passwordScroll)
-        )
+        PasswordTextField(password)
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically

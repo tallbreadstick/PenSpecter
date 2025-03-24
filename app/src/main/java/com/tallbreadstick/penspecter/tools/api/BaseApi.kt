@@ -10,14 +10,22 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-val ShodanBaseUrl: String = "https://api.shodan.io/"
-
-fun getApiKey(): String {
+const val ShodanBaseUrl: String = "https://api.shodan.io/"
+const val LocationBaseUrl: String = "https://api.ipgeolocation.io/"
+fun getShodanApiKey(): String {
     val dotenv = dotenv {
         directory = "/assets"
         filename = "env"
     }
     return dotenv["SHODAN_API_KEY"]
+}
+
+fun getLocationApiKey(): String {
+    val dotenv = dotenv {
+        directory = "/assets"
+        filename = "env"
+    }
+    return dotenv["LOCATION_API_KEY"]
 }
 
 interface DNSLookupService {
@@ -43,7 +51,6 @@ interface DNSLookupService {
     ): DomainInfoResponse
 
 }
-
 
 object RetrofitClient {
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

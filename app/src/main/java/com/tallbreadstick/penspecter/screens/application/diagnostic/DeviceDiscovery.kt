@@ -1,4 +1,4 @@
-package com.tallbreadstick.penspecter.screens.application
+package com.tallbreadstick.penspecter.screens.application.diagnostic
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice

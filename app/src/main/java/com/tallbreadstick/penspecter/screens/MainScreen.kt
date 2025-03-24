@@ -8,13 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tallbreadstick.penspecter.screens.application.Dashboard
-import com.tallbreadstick.penspecter.screens.application.DeviceDiscovery
+import com.tallbreadstick.penspecter.screens.application.diagnostic.DeviceDiscovery
 import com.tallbreadstick.penspecter.screens.auth.LoginPage
 import com.tallbreadstick.penspecter.screens.auth.LogoutPage
 import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
-import com.tallbreadstick.penspecter.screens.application.DNSLookup
-import com.tallbreadstick.penspecter.screens.application.Traceroute
+import com.tallbreadstick.penspecter.screens.application.diagnostic.DNSLookup
+import com.tallbreadstick.penspecter.screens.application.diagnostic.Traceroute
+import com.tallbreadstick.penspecter.screens.application.reconnaissance.IPGeolocator
 import com.tallbreadstick.penspecter.screens.user.DeveloperPage
 import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.screens.user.UserProfilePage
@@ -58,7 +59,7 @@ fun MainScreen() {
                 DeveloperPage(navController)
             }
 
-            // Feature Pages
+            // Diagnostic Tools
             composable("device_discovery") {
                 DeviceDiscovery(navController, LocalContext.current)
             }
@@ -67,6 +68,11 @@ fun MainScreen() {
             }
             composable("dns_lookup") {
                 DNSLookup(navController, dnsViewModel)
+            }
+
+            // Reconnaissance Tools
+            composable("ip_geolocator") {
+                IPGeolocator(navController)
             }
 
         })

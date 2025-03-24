@@ -131,7 +131,11 @@ fun Dashboard(navController: NavController? = null) {
                         title = "Web Scraper"
                     )
                     ToolIcon(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                navController?.navigate("ip_geolocator")
+                            },
                         resource = painterResource(R.drawable.ip_geolocator),
                         title = "IP Geo Locator"
                     )
