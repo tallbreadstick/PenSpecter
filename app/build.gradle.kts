@@ -35,7 +35,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -69,10 +69,10 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.material.icons.extended)
-    implementation(libs.android.sdk)
+//    implementation(libs.github.maplibre.gl.native)
     implementation(libs.osmdroid.android)
-    implementation(libs.osmdroid.mapsforge)
-    implementation(libs.gl.android.sdk)
+//    implementation(libs.osmdroid.mapsforge)
+//    implementation(libs.gl.android.sdk)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

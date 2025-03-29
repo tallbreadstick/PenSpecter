@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.R
 import com.tallbreadstick.penspecter.components.OpenStreetMapView
+//import com.tallbreadstick.penspecter.components.OpenStreetMapView
 import com.tallbreadstick.penspecter.menus.Navbar
 import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
