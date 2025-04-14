@@ -1,6 +1,7 @@
 package com.tallbreadstick.penspecter.tools.api
 
 import com.tallbreadstick.penspecter.models.DomainInfoResponse
+import com.tallbreadstick.penspecter.models.GeoLocationResponse
 import io.github.cdimascio.dotenv.dotenv
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -28,6 +29,14 @@ fun getLocationApiKey(): String {
     return dotenv["LOCATION_API_KEY"]
 }
 
+fun getMapsApiKey(): String {
+    val dotenv = dotenv {
+        directory = "/assets"
+        filename = "env"
+    }
+    return dotenv["MAPS_API_KEY"]
+}
+
 interface DNSLookupService {
     @GET("dns/resolve")
     suspend fun resolveDns(
@@ -52,6 +61,15 @@ interface DNSLookupService {
 
 }
 
+interface GeoLocationService {
+    @GET("ipgeo")
+    suspend fun getLocation(
+        @Query("apiKey") apiKey: String,
+        @Query("ip") ip: String
+    ): GeoLocationResponse
+}
+
+
 object RetrofitClient {
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -64,5 +82,12 @@ object RetrofitClient {
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+    val locationRetrofit = Retrofit.Builder()
+        .baseUrl(LocationBaseUrl)
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val locationService: GeoLocationService = locationRetrofit.create(GeoLocationService::class.java)
     val apiService: DNSLookupService = retrofit.create(DNSLookupService::class.java)
 }

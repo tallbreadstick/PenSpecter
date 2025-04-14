@@ -1,4 +1,9 @@
 package com.tallbreadstick.penspecter.models
 
-class GeolocationResponse {
-}
+data class GeoLocationResponse(
+    val ip: String,
+    val latitude: Double,
+    val longitude: Double,
+    val city: String?,
+    val countryName: String?
+)

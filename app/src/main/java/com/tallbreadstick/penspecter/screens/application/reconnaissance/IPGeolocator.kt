@@ -1,9 +1,9 @@
 package com.tallbreadstick.penspecter.screens.application.reconnaissance
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,38 +16,65 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.*
 import com.tallbreadstick.penspecter.R
-import com.tallbreadstick.penspecter.components.OpenStreetMapView
-//import com.tallbreadstick.penspecter.components.OpenStreetMapView
 import com.tallbreadstick.penspecter.menus.Navbar
 import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
+import com.tallbreadstick.penspecter.viewmodels.GeolocatorViewModel
 
-@Preview
 @Composable
+@Preview
 fun IPGeolocator(navController: NavController? = null) {
     var searchQuery by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
 
-    // State to store latitude and longitude
-    var latitude by remember { mutableDoubleStateOf(37.7749) }  // Default: San Francisco
-    var longitude by remember { mutableDoubleStateOf(-122.4194) }
+    val viewModel: GeolocatorViewModel = viewModel()
+
+    val latitude by viewModel.latitude.collectAsState()
+    val longitude by viewModel.longitude.collectAsState()
+
+    val markerState = remember { MarkerState(position = LatLng(latitude, longitude)) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 10f)
+    }
+
+// Trigger marker & camera position change when ViewModel updates
+    LaunchedEffect(latitude, longitude) {
+        markerState.position = LatLng(latitude, longitude)
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(
+            LatLng(latitude, longitude), 10f
+        )
+    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         Navbar(navController)
 
-        // Search Box
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Gray),
-            contentAlignment = Alignment.TopCenter
-        ) {
+        // Map + Search Overlay
+        Box(modifier = Modifier.fillMaxSize()) {
+
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState
+            ) {
+                Marker(
+                    state = markerState,
+                    title = "Location",
+                    snippet = "Lat: $latitude, Lng: $longitude"
+                )
+            }
+
+            // Overlayed Search Box
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .padding(top = 20.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter) // Float at top of map
                     .background(Color.White, shape = RoundedCornerShape(8.dp))
                     .border(
                         width = if (isFocused) 2.dp else 0.dp,
@@ -83,10 +110,11 @@ fun IPGeolocator(navController: NavController? = null) {
                     )
                     Button(
                         onClick = {
-                            // TODO: Call IP geolocation API here
-                            // Example: If API returns latitude = 40.7128, longitude = -74.0060
-                            latitude = 40.7128  // New York example
-                            longitude = -74.0060
+                            viewModel.searchIP(searchQuery)
+                            cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                                LatLng(latitude, longitude), 10f
+                            )
+                            markerState.position = LatLng(latitude, longitude)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = PaleBlue),
                         modifier = Modifier.size(50.dp),
@@ -99,11 +127,6 @@ fun IPGeolocator(navController: NavController? = null) {
                     }
                 }
             }
-        }
-
-        // OpenStreetMap
-        Box(modifier = Modifier.fillMaxSize()) {
-            OpenStreetMapView(latitude, longitude)
         }
     }
 }

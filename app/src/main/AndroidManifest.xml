@@ -35,6 +35,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" android:exported="false" android:screenOrientation="portrait" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/map_api_key"/>
     </application>
 
 </manifest>
