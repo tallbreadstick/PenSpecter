@@ -16,6 +16,7 @@ import com.tallbreadstick.penspecter.screens.auth.RegisterPage
 import com.tallbreadstick.penspecter.screens.application.diagnostic.DNSLookup
 import com.tallbreadstick.penspecter.screens.application.diagnostic.Traceroute
 import com.tallbreadstick.penspecter.screens.application.reconnaissance.IPGeolocator
+import com.tallbreadstick.penspecter.screens.application.reconnaissance.WebScraper
 import com.tallbreadstick.penspecter.screens.user.DeveloperPage
 import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.screens.user.UserProfilePage
@@ -71,6 +72,9 @@ fun MainScreen() {
             }
 
             // Reconnaissance Tools
+            composable("web_scraper") {
+                WebScraper(navController, LocalContext.current)
+            }
             composable("ip_geolocator") {
                 IPGeolocator(navController)
             }
