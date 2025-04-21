@@ -9,11 +9,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class GeolocatorViewModel : ViewModel() {
+
     private val _latitude = MutableStateFlow(37.7749)  // Default San Francisco
     val latitude: StateFlow<Double> = _latitude
 
     private val _longitude = MutableStateFlow(-122.4194)
     val longitude: StateFlow<Double> = _longitude
+
+    private val _city = MutableStateFlow("")
+    val city: StateFlow<String> = _city
+
+    private val _country = MutableStateFlow("")
+    val country: StateFlow<String> = _country
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
@@ -30,6 +37,8 @@ class GeolocatorViewModel : ViewModel() {
                 val response = RetrofitClient.locationService.getLocation(apiKey, ip)
                 _latitude.value = response.latitude
                 _longitude.value = response.longitude
+                _city.value = response.city ?: "Unknown"
+                _country.value = response.countryName ?: "Unknown"
             } catch (e: Exception) {
                 _error.value = e.localizedMessage ?: "Unknown error"
             } finally {

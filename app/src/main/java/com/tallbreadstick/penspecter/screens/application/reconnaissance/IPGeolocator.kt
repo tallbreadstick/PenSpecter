@@ -1,5 +1,7 @@
 package com.tallbreadstick.penspecter.screens.application.reconnaissance
 
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,8 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.*
 import com.tallbreadstick.penspecter.R
 import com.tallbreadstick.penspecter.menus.Navbar
@@ -30,11 +35,22 @@ import com.tallbreadstick.penspecter.viewmodels.GeolocatorViewModel
 @Composable
 @Preview
 fun IPGeolocator(navController: NavController? = null) {
+
+    val context = LocalContext.current
+    val mapStyleOptions = remember {
+        MapStyleOptions.loadRawResourceStyle(context, R.raw.dark_map_style)
+    }
+    val properties = remember {
+        MapProperties(mapStyleOptions = mapStyleOptions)
+    }
+
     var searchQuery by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
 
     val viewModel: GeolocatorViewModel = viewModel()
 
+    val city by viewModel.city.collectAsState()
+    val country by viewModel.country.collectAsState()
     val latitude by viewModel.latitude.collectAsState()
     val longitude by viewModel.longitude.collectAsState()
 
@@ -45,14 +61,16 @@ fun IPGeolocator(navController: NavController? = null) {
 
 // Trigger marker & camera position change when ViewModel updates
     LaunchedEffect(latitude, longitude) {
-        markerState.position = LatLng(latitude, longitude)
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(
-            LatLng(latitude, longitude), 10f
+        val target = LatLng(latitude, longitude)
+        cameraPositionState.animate(
+            update = CameraUpdateFactory.newLatLngZoom(target, 10f),
+            durationMs = 2000
         )
+        markerState.position = target
     }
 
-
     Column(modifier = Modifier.fillMaxSize()) {
+
         Navbar(navController)
 
         // Map + Search Overlay
@@ -60,7 +78,9 @@ fun IPGeolocator(navController: NavController? = null) {
 
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
+                cameraPositionState = cameraPositionState,
+                properties = properties,
+                uiSettings = MapUiSettings(zoomControlsEnabled = false)
             ) {
                 Marker(
                     state = markerState,
@@ -69,13 +89,40 @@ fun IPGeolocator(navController: NavController? = null) {
                 )
             }
 
-            // Overlayed Search Box
+            if (city.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 20.dp)
+                        .background(
+                            Color.Black.copy(alpha = 0.7f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "Approximated Location: $city, $country",
+                        color = Color.White,
+                        fontFamily = DidactGothic,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp) // Adjust this height as needed
+                    .align(Alignment.BottomCenter)
+            )
+
+            // Overlaid Search Box
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp, 40.dp)
                     .align(Alignment.BottomCenter) // Float at top of map
-                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
                     .border(
                         width = if (isFocused) 2.dp else 0.dp,
                         color = if (isFocused) PaleBlue else Color.Transparent,
@@ -111,11 +158,8 @@ fun IPGeolocator(navController: NavController? = null) {
                     Button(
                         onClick = {
                             viewModel.searchIP(searchQuery)
-                            cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                                LatLng(latitude, longitude), 10f
-                            )
-                            markerState.position = LatLng(latitude, longitude)
-                        },
+                        }
+                        ,
                         colors = ButtonDefaults.buttonColors(containerColor = PaleBlue),
                         modifier = Modifier.size(50.dp),
                         contentPadding = PaddingValues(8.dp)
@@ -127,6 +171,7 @@ fun IPGeolocator(navController: NavController? = null) {
                     }
                 }
             }
+
         }
     }
 }
