@@ -120,7 +120,7 @@ fun IPGeolocator(navController: NavController? = null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 40.dp)
+                    .padding(16.dp, 64.dp)
                     .align(Alignment.BottomCenter) // Float at top of map
                     .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
                     .border(
@@ -146,7 +146,7 @@ fun IPGeolocator(navController: NavController? = null) {
                             .weight(1f)
                             .padding(horizontal = 8.dp)
                             .onFocusChanged { isFocused = it.isFocused },
-                        placeholder = { Text("Enter IP Address or Domain", fontFamily = DidactGothic, color = Color.Gray) },
+                        placeholder = { Text("Enter IP Address", fontFamily = DidactGothic, color = Color.Gray) },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,

@@ -33,7 +33,7 @@ fun Navbar(navController: NavController?, sidebarOpen: MutableState<Boolean>? = 
         if (sidebarOpen != null) {
             Box(
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(35.dp)
                     .clickable {
                         sidebarOpen.value = true
                     }
@@ -44,11 +44,11 @@ fun Navbar(navController: NavController?, sidebarOpen: MutableState<Boolean>? = 
                 )
             }
         } else {
-            Spacer(modifier = Modifier.width(50.dp))
+            Spacer(modifier = Modifier.width(35.dp))
         }
         Spacer(modifier = Modifier.weight(1f))
         Box(
-            modifier = Modifier.size(50.dp)
+            modifier = Modifier.size(35.dp)
         ) {
             Image(
                 painter = painterResource(R.drawable.user_profile),
@@ -63,7 +63,7 @@ fun Navbar(navController: NavController?, sidebarOpen: MutableState<Boolean>? = 
         }
         Spacer(modifier = Modifier.width(10.dp))
         Box(
-            modifier = Modifier.size(50.dp)
+            modifier = Modifier.size(35.dp)
         ) {
             Image(
                 painter = painterResource(R.drawable.settings),
