@@ -15,6 +15,7 @@ import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
 import com.tallbreadstick.penspecter.screens.application.diagnostic.DNSLookup
 import com.tallbreadstick.penspecter.screens.application.diagnostic.Traceroute
+import com.tallbreadstick.penspecter.screens.application.penetration.DictionaryAttack
 import com.tallbreadstick.penspecter.screens.application.reconnaissance.IPGeolocator
 import com.tallbreadstick.penspecter.screens.application.reconnaissance.WebScraper
 import com.tallbreadstick.penspecter.screens.user.DeveloperPage
@@ -77,6 +78,11 @@ fun MainScreen() {
             }
             composable("ip_geolocator") {
                 IPGeolocator(navController)
+            }
+
+            // Penetration Tools
+            composable("dictionary_attack") {
+                DictionaryAttack(navController)
             }
 
         })

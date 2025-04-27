@@ -169,7 +169,11 @@ fun Dashboard(navController: NavController? = null) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ToolIcon(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                navController?.navigate("dictionary_attack")
+                            },
                         resource = painterResource(R.drawable.dictionary_attack),
                         title = "Dictionary Attack"
                     )
