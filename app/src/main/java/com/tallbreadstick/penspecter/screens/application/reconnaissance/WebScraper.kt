@@ -1,7 +1,6 @@
 package com.tallbreadstick.penspecter.screens.application.reconnaissance
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,6 +24,10 @@ import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
 import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 import com.tallbreadstick.penspecter.ui.theme.Roboto
+import com.tallbreadstick.penspecter.viewmodels.ScraperViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.tallbreadstick.penspecter.tools.ScraperTools
 
 @Preview
 @Composable
@@ -32,10 +35,8 @@ fun WebScraper(navController: NavController? = null, context: Context? = null) {
     val sidebarOpen = remember { mutableStateOf(false) }
     var urlInput by remember { mutableStateOf("") }
 
-    val scrapedTables = remember { mutableStateListOf<String>() }
-    val scrapedLists = remember { mutableStateListOf<String>() }
-    val scrapedForms = remember { mutableStateListOf<String>() }
-    val scrapedMedia = remember { mutableStateListOf<String>() }
+    // Get the ViewModel
+    val scraperViewModel: ScraperViewModel = viewModel()
 
     val expandedTables = remember { mutableStateOf(false) }
     val expandedLists = remember { mutableStateOf(false) }
@@ -61,7 +62,26 @@ fun WebScraper(navController: NavController? = null, context: Context? = null) {
         OutlinedTextField(
             value = urlInput,
             onValueChange = { urlInput = it },
-            label = { Text("Enter Web Address", fontFamily = Roboto) },
+            label = {
+                Text(
+                    "Enter Web Address",
+                    fontFamily = Roboto
+                )
+            },
+            textStyle = LocalTextStyle.current.copy(
+                color = Color.White
+            ),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = DarkGray,
+                unfocusedContainerColor = DarkGray,
+                focusedIndicatorColor = PaleBlue,
+                unfocusedIndicatorColor = Color.Gray,
+                cursorColor = PaleBlue,
+                focusedLabelColor = PaleBlue,
+                unfocusedLabelColor = Color.LightGray,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -70,16 +90,15 @@ fun WebScraper(navController: NavController? = null, context: Context? = null) {
         Button(
             onClick = {
                 if (urlInput.isNotBlank()) {
-                    // Placeholder scrape logic
-                    scrapedTables.clear()
-                    scrapedLists.clear()
-                    scrapedForms.clear()
-                    scrapedMedia.clear()
-                    scrapedTables.addAll(listOf("Table 1", "Table 2"))
-                    scrapedLists.addAll(listOf("List A", "List B"))
-                    scrapedForms.addAll(listOf("Form X", "Form Y"))
-                    scrapedMedia.addAll(listOf("Image1.png", "VideoClip.mp4"))
-                    Toast.makeText(context, "Scraping complete!", Toast.LENGTH_SHORT).show()
+                    // Start scraping when the button is clicked
+                    scraperViewModel.scrapeWebsite(urlInput,
+                        onSuccess = {
+                            Toast.makeText(context, "Scraping complete!", Toast.LENGTH_SHORT).show()
+                        },
+                        onError = { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 } else {
                     Toast.makeText(context, "Please enter a valid URL", Toast.LENGTH_SHORT).show()
                 }
@@ -107,16 +126,16 @@ fun WebScraper(navController: NavController? = null, context: Context? = null) {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item { DropdownSection("Tables", scrapedTables, expandedTables) }
-            item { DropdownSection("Lists", scrapedLists, expandedLists) }
-            item { DropdownSection("Forms", scrapedForms, expandedForms) }
-            item { DropdownSection("Media", scrapedMedia, expandedMedia) }
+            item { DropdownSection("Tables", urlInput, scraperViewModel.scrapedTables, expandedTables) }
+            item { DropdownSection("Lists", urlInput, scraperViewModel.scrapedLists, expandedLists) }
+            item { DropdownSection("Forms", urlInput, scraperViewModel.scrapedForms, expandedForms) }
+            item { DropdownSection("Media", urlInput, scraperViewModel.scrapedMedia, expandedMedia) }
         }
     }
 }
 
 @Composable
-fun DropdownSection(title: String, items: List<String>, expanded: MutableState<Boolean>) {
+fun DropdownSection(title: String, baseUrl: String, items: List<String>, expanded: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,13 +164,150 @@ fun DropdownSection(title: String, items: List<String>, expanded: MutableState<B
 
         if (expanded.value) {
             items.forEach { item ->
-                Text(
-                    text = item,
-                    color = Color.White,
-                    fontFamily = Roboto,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 4.dp, start = 8.dp)
-                )
+                Spacer(Modifier.height(8.dp))
+                when (title) {
+                    "Tables" -> {
+                        val tableData = ScraperTools.parseTable(item)
+                        TableComposable(tableData)
+                    }
+                    "Lists" -> {
+                        val listItems = ScraperTools.parseList(item)
+                        ListComposable(listItems)
+                    }
+                    "Forms" -> {
+                        val formFields = ScraperTools.parseForm(item)
+                        FormComposable(formFields)
+                    }
+                    "Media" -> {
+                        val mediaUrls = ScraperTools.parseMedia(item, baseUrl)
+                        MediaComposable(mediaUrls)
+                    }
+                    else -> {
+                        Text(
+                            text = item,
+                            color = Color.White,
+                            fontFamily = Roboto,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TableComposable(table: List<List<String>>) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
+            .padding(8.dp)
+    ) {
+        table.forEach { row ->
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                row.forEach { cell ->
+                    Text(
+                        text = cell,
+                        color = Color.White,
+                        fontFamily = Roboto,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .weight(1f, fill = true)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ListComposable(items: List<String>) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
+            .padding(8.dp)
+    ) {
+        items.forEach { item ->
+            Text(
+                text = "• $item",
+                color = Color.White,
+                fontFamily = Roboto,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(vertical = 2.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun FormComposable(fields: List<Pair<String, String>>) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
+            .padding(8.dp)
+    ) {
+        fields.forEach { (label, type) ->
+            Text(
+                text = "$label ($type)",
+                color = Color.White,
+                fontFamily = Roboto,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(vertical = 2.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun MediaComposable(urls: List<String>) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
+            .padding(8.dp)
+    ) {
+        urls.forEach { url ->
+            when {
+                url.startsWith("data:image") -> {
+                    // Render base64 image
+                    AsyncImage(
+                        model = url,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(vertical = 4.dp)
+                    )
+                }
+                url.endsWith(".jpg", true) || url.endsWith(".jpeg", true) ||
+                        url.endsWith(".png", true) || url.endsWith(".gif", true) -> {
+                    // Render standard image URL
+                    AsyncImage(
+                        model = url,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(vertical = 4.dp)
+                    )
+                }
+                else -> {
+                    // Just show the media URL as text (for now)
+                    Text(
+                        text = "Media: $url",
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    )
+                }
             }
         }
     }

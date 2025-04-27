@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.android.maps.compose)
     implementation(libs.play.services.maps)
+    implementation(libs.okhttp)
+    implementation(libs.jsoup)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
