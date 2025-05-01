@@ -10,23 +10,26 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+import com.tallbreadstick.penspecter.tools.ScraperTools
+import com.tallbreadstick.penspecter.tools.EndpointData
 
 class ScraperViewModel : ViewModel() {
-    var scrapedTables = mutableStateListOf<String>()
-    var scrapedLists = mutableStateListOf<String>()
-    var scrapedForms = mutableStateListOf<String>()
-    var scrapedMedia = mutableStateListOf<String>()
+    var scrapedEndpoints = mutableStateListOf<EndpointData>()
 
     fun scrapeWebsite(url: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                // Make a network request on the IO thread
+                // Fetch HTML content
                 val doc = fetchHtml(url)
 
-                // Parse the HTML content for relevant elements
-                parseHtml(doc)
+                // Scrape for endpoints from HTML and JavaScript files
+                val endpoints = ScraperTools.scrapeEndpointsFromHtmlAndJS(doc)
 
-                // Call onSuccess to update the UI
+                scrapedEndpoints.clear()
+                scrapedEndpoints.addAll(endpoints)
+
+                // Call onSuccess to notify the UI
                 onSuccess()
             } catch (e: Exception) {
                 // If there is an error, notify the UI
@@ -43,29 +46,29 @@ class ScraperViewModel : ViewModel() {
         }
     }
 
-    private fun parseHtml(doc: Document) {
-        // Scrape Tables
-        scrapedTables.clear()
-        doc.select("table").forEach { table ->
-            scrapedTables.add(table.toString())  // Extract table data
+    // Function to extract inline JS and script src URLs
+    fun scrapeEndpointsFromHtmlAndJS(doc: Document): List<EndpointData> {
+        val endpoints = mutableListOf<EndpointData>()
+
+        // Scrape for JavaScript files in script tags (external .js files)
+        val scriptTags = doc.select("script[src]")
+        scriptTags.forEach { script ->
+            val src = script.attr("src")
+            // Add endpoint data for the JavaScript file source
+            endpoints.add(EndpointData(url = src, method = "GET", headers = emptyMap(), bodyFormat = "None"))
         }
 
-        // Scrape Lists
-        scrapedLists.clear()
-        doc.select("ul, ol").forEach { list ->
-            scrapedLists.add(list.toString())  // Extract list data
+        // Scrape inline JavaScript in script tags
+        val inlineScripts = doc.select("script:not([src])")
+        inlineScripts.forEach { script ->
+            val scriptContent = script.data()
+            // You can parse or search for API endpoints within this script content if needed
+            // For example, check for fetch() or XMLHttpRequest calls and extract endpoints
+            // For now, we just add the inline script as a potential endpoint (you could expand this)
+            endpoints.add(EndpointData(url = "Inline JavaScript", method = "POST", headers = emptyMap(), bodyFormat = scriptContent))
         }
 
-        // Scrape Forms
-        scrapedForms.clear()
-        doc.select("form").forEach { form ->
-            scrapedForms.add(form.toString())  // Extract form data
-        }
-
-        // Scrape Media
-        scrapedMedia.clear()
-        doc.select("img, video, audio").forEach { media ->
-            scrapedMedia.add(media.toString())  // Extract media data
-        }
+        // Optionally, you can also check for other embedded JavaScript code patterns
+        return endpoints
     }
 }

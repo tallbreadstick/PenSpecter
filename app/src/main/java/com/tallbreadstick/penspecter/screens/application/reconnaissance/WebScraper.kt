@@ -3,8 +3,6 @@ package com.tallbreadstick.penspecter.screens.application.reconnaissance
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
@@ -26,8 +25,7 @@ import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 import com.tallbreadstick.penspecter.ui.theme.Roboto
 import com.tallbreadstick.penspecter.viewmodels.ScraperViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import com.tallbreadstick.penspecter.tools.ScraperTools
+import com.tallbreadstick.penspecter.tools.EndpointData
 
 @Preview
 @Composable
@@ -37,11 +35,6 @@ fun WebScraper(navController: NavController? = null, context: Context? = null) {
 
     // Get the ViewModel
     val scraperViewModel: ScraperViewModel = viewModel()
-
-    val expandedTables = remember { mutableStateOf(false) }
-    val expandedLists = remember { mutableStateOf(false) }
-    val expandedForms = remember { mutableStateOf(false) }
-    val expandedMedia = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -120,195 +113,82 @@ fun WebScraper(navController: NavController? = null, context: Context? = null) {
             )
         }
 
+        // Displaying the scraped endpoints
         LazyColumn(
             modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item { DropdownSection("Tables", urlInput, scraperViewModel.scrapedTables, expandedTables) }
-            item { DropdownSection("Lists", urlInput, scraperViewModel.scrapedLists, expandedLists) }
-            item { DropdownSection("Forms", urlInput, scraperViewModel.scrapedForms, expandedForms) }
-            item { DropdownSection("Media", urlInput, scraperViewModel.scrapedMedia, expandedMedia) }
+            item {
+                scraperViewModel.scrapedEndpoints.forEach { endpoint ->
+                    EndpointCard(endpoint)
+                }
+            }
         }
     }
 }
 
 @Composable
-fun DropdownSection(title: String, baseUrl: String, items: List<String>, expanded: MutableState<Boolean>) {
-    Column(
+fun EndpointCard(endpoint: EndpointData) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(14.dp))
-            .background(Color.DarkGray, shape = RoundedCornerShape(14.dp))
-            .padding(12.dp)
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(8.dp)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkGray) // Dark background for card
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-                .clickable { expanded.value = !expanded.value }
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
         ) {
+            // URL
             Text(
-                text = title,
-                color = Color.White,
-                fontFamily = DidactGothic,
-                fontSize = 20.sp
+                text = "Endpoint URL: ${endpoint.url}",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = PaleBlue, // Soft blue for URL
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-            Text(
-                text = if (expanded.value) "▲" else "▼",
-                color = Color.Gray,
-                fontSize = 16.sp
-            )
-        }
 
-        if (expanded.value) {
-            items.forEach { item ->
-                Spacer(Modifier.height(8.dp))
-                when (title) {
-                    "Tables" -> {
-                        val tableData = ScraperTools.parseTable(item)
-                        TableComposable(tableData)
-                    }
-                    "Lists" -> {
-                        val listItems = ScraperTools.parseList(item)
-                        ListComposable(listItems)
-                    }
-                    "Forms" -> {
-                        val formFields = ScraperTools.parseForm(item)
-                        FormComposable(formFields)
-                    }
-                    "Media" -> {
-                        val mediaUrls = ScraperTools.parseMedia(item, baseUrl)
-                        MediaComposable(mediaUrls)
-                    }
-                    else -> {
-                        Text(
-                            text = item,
-                            color = Color.White,
-                            fontFamily = Roboto,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                }
+            // HTTP Method
+            Text(
+                text = "Method: ${endpoint.method}",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.LightGray // Light gray for method text
+                ),
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+
+            // Headers
+            Text(
+                text = "Headers:",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.LightGray // Light gray for headers label
+                ),
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            endpoint.headers.forEach { (key, value) ->
+                Text(
+                    text = "$key: $value",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.LightGray // Light gray for header values
+                    ),
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
             }
-        }
-    }
-}
 
-@Composable
-fun TableComposable(table: List<List<String>>) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
-            .padding(8.dp)
-    ) {
-        table.forEach { row ->
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                row.forEach { cell ->
-                    Text(
-                        text = cell,
-                        color = Color.White,
-                        fontFamily = Roboto,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .weight(1f, fill = true)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ListComposable(items: List<String>) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
-            .padding(8.dp)
-    ) {
-        items.forEach { item ->
+            // Body Format
             Text(
-                text = "• $item",
-                color = Color.White,
-                fontFamily = Roboto,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(vertical = 2.dp)
+                text = "Body Format: ${endpoint.bodyFormat}",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.LightGray // Light gray for body format text
+                ),
+                modifier = Modifier.padding(top = 8.dp)
             )
-        }
-    }
-}
-
-@Composable
-fun FormComposable(fields: List<Pair<String, String>>) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
-            .padding(8.dp)
-    ) {
-        fields.forEach { (label, type) ->
-            Text(
-                text = "$label ($type)",
-                color = Color.White,
-                fontFamily = Roboto,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(vertical = 2.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun MediaComposable(urls: List<String>) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
-            .padding(8.dp)
-    ) {
-        urls.forEach { url ->
-            when {
-                url.startsWith("data:image") -> {
-                    // Render base64 image
-                    AsyncImage(
-                        model = url,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(vertical = 4.dp)
-                    )
-                }
-                url.endsWith(".jpg", true) || url.endsWith(".jpeg", true) ||
-                        url.endsWith(".png", true) || url.endsWith(".gif", true) -> {
-                    // Render standard image URL
-                    AsyncImage(
-                        model = url,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(vertical = 4.dp)
-                    )
-                }
-                else -> {
-                    // Just show the media URL as text (for now)
-                    Text(
-                        text = "Media: $url",
-                        color = Color.Gray,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    )
-                }
-            }
         }
     }
 }

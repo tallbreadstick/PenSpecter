@@ -14,7 +14,8 @@ import com.tallbreadstick.penspecter.screens.auth.LogoutPage
 import com.tallbreadstick.penspecter.screens.auth.RecoveryPage
 import com.tallbreadstick.penspecter.screens.auth.RegisterPage
 import com.tallbreadstick.penspecter.screens.application.diagnostic.DNSLookup
-import com.tallbreadstick.penspecter.screens.application.diagnostic.Traceroute
+import com.tallbreadstick.penspecter.screens.application.diagnostic.Ping
+import com.tallbreadstick.penspecter.screens.application.diagnostic.WifiAnalyzer
 import com.tallbreadstick.penspecter.screens.application.penetration.DictionaryAttack
 import com.tallbreadstick.penspecter.screens.application.penetration.DictionaryAttackInProgress
 import com.tallbreadstick.penspecter.screens.application.penetration.PermutationAttack
@@ -72,11 +73,14 @@ fun MainScreen() {
             composable("device_discovery") {
                 DeviceDiscovery(navController, LocalContext.current)
             }
-            composable("traceroute") {
-                Traceroute(navController)
+            composable("ping") {
+                Ping(navController)
             }
             composable("dns_lookup") {
                 DNSLookup(navController, dnsViewModel)
+            }
+            composable("wifi_analyzer") {
+                WifiAnalyzer(navController)
             }
 
             // Reconnaissance Tools

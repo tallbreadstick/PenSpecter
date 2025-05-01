@@ -75,15 +75,19 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("traceroute")
+                                navController?.navigate("ping")
                             },
                         resource = painterResource(R.drawable.traceroute),
-                        title = "Traceroute"
+                        title = "Ping"
                     )
                     ToolIcon(
-                        modifier = Modifier.weight(1f),
-                        resource = painterResource(R.drawable.packet_analyzer),
-                        title = "Packet Analyzer"
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                navController?.navigate("wifi_analyzer")
+                            },
+                        resource = painterResource(R.drawable.wifi_analyzer),
+                        title = "WiFi Analyzer"
                     )
                 }
                 Row(
@@ -99,12 +103,8 @@ fun Dashboard(navController: NavController? = null) {
                         resource = painterResource(R.drawable.dns_lookup),
                         title = "DNS Lookup"
                     )
-                    ToolIcon(
-                        modifier = Modifier.weight(1f),
-                        resource = painterResource(R.drawable.wifi_analyzer),
-                        title = "WiFi Analyzer"
-                    )
-                    Box(modifier = Modifier.weight(1f)) {} // xdd
+                    Box(modifier = Modifier.weight(1f))
+                    Box(modifier = Modifier.weight(1f)) // xdd
                 }
             }
             Column(
@@ -143,11 +143,7 @@ fun Dashboard(navController: NavController? = null) {
                         resource = painterResource(R.drawable.ip_geolocator),
                         title = "IP Geo Locator"
                     )
-                    ToolIcon(
-                        modifier = Modifier.weight(1f),
-                        resource = painterResource(R.drawable.live_feeds),
-                        title = "Live Feeds"
-                    )
+                    Box(modifier = Modifier.weight(1f))
                 }
             }
             Column(
@@ -186,7 +182,7 @@ fun Dashboard(navController: NavController? = null) {
                         resource = painterResource(R.drawable.permutation_attack),
                         title = "Permutation Attack"
                     )
-                    Box(modifier = Modifier.weight(1f)) {}
+                    Box(modifier = Modifier.weight(1f))
                 }
             }
         }

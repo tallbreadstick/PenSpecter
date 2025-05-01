@@ -1,52 +1,91 @@
 package com.tallbreadstick.penspecter.tools
 
-import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 
 object ScraperTools {
 
-    fun parseTable(html: String): List<List<String>> {
-        val table = Jsoup.parse(html).selectFirst("table") ?: return emptyList()
-        return table.select("tr").map { row ->
-            row.select("th, td").map { it.text() }
+    // Function to scrape all endpoints (including their details like method, headers, body)
+    fun scrapeEndpointsFromHtmlAndJS(doc: Document): List<EndpointData> {
+        val endpoints = mutableListOf<EndpointData>()
+
+        // Scrape external script files (src attribute of script tags)
+        val scriptElements: Elements = doc.select("script[src]")
+        scriptElements.forEach { script ->
+            val scriptSrc = script.attr("src")
+            // Add endpoint data for external JavaScript file sources
+            endpoints.add(EndpointData(url = scriptSrc, method = "GET", headers = emptyMap(), bodyFormat = "None"))
         }
-    }
 
-    fun parseList(html: String): List<String> {
-        val list = Jsoup.parse(html).selectFirst("ul, ol") ?: return emptyList()
-        return list.select("li").map { it.text() }
-    }
+        // Scrape inline JavaScript (without src attribute)
+        val inlineScriptElements: Elements = doc.select("script:not([src])")
+        inlineScriptElements.forEach { script ->
+            val scriptContent = script.data()
 
-    fun parseForm(html: String): List<Pair<String, String>> {
-        val form = Jsoup.parse(html).selectFirst("form") ?: return emptyList()
-        return form.select("input, select, textarea").map { input ->
-            val label = input.attr("name").ifEmpty { input.tagName() }
-            val type = input.attr("type").ifEmpty { "text" }
-            label to type
-        }
-    }
+            // Check for 'fetch' requests
+            val fetchPattern = Regex("""fetch\((.*?)\)""")
+            val fetchMatches = fetchPattern.findAll(scriptContent)
 
-    fun parseMedia(html: String, baseUrl: String): List<String> {
-        val doc = Jsoup.parse(html)
-        val mediaUrls = mutableListOf<String>()
+            fetchMatches.forEach { match ->
+                val endpointUrl = match.groupValues[1]
+                val headers = extractHeadersFromRequest(match.value)
+                val method = "GET" // For simplicity, assuming GET. You can extract it based on the script if needed.
+                val bodyFormat = "JSON" // If there's a body, this can be extracted as well.
+                endpoints.add(EndpointData(endpointUrl, headers, method, bodyFormat))
+            }
 
-        // Prepend baseUrl to relative URLs
-        doc.select("img, video, audio").forEach { media ->
-            var src = media.attr("src")
-            if (src.startsWith("data:") || src.startsWith("http") || src.startsWith("https")) {
-                // Already absolute, no change needed
-                mediaUrls.add(src)
-            } else {
-                // Handle relative URLs
-                if (src.startsWith("/")) {
-                    // Prepend base URL if relative URL starts with '/'
-                    src = "$baseUrl$src"
-                } else {
-                    // Prepend base URL to relative path
-                    src = "$baseUrl/$src"
-                }
-                mediaUrls.add(src)
+            // Check for 'axios' requests
+            val axiosPattern = Regex("""axios\((.*?)\)""")
+            val axiosMatches = axiosPattern.findAll(scriptContent)
+
+            axiosMatches.forEach { match ->
+                val endpointUrl = match.groupValues[1]
+                val headers = extractHeadersFromRequest(match.value)
+                val method = "GET" // Same logic as for fetch
+                val bodyFormat = "JSON"
+                endpoints.add(EndpointData(endpointUrl, headers, method, bodyFormat))
+            }
+
+            // Check for 'XMLHttpRequest' requests
+            val xhrPattern = Regex("""new\sXMLHttpRequest\(\)\.open\((.*?)\)""")
+            val xhrMatches = xhrPattern.findAll(scriptContent)
+
+            xhrMatches.forEach { match ->
+                val endpointUrl = match.groupValues[1]
+                val headers = extractHeadersFromRequest(match.value)
+                val method = "GET"
+                val bodyFormat = "JSON"
+                endpoints.add(EndpointData(endpointUrl, headers, method, bodyFormat))
             }
         }
-        return mediaUrls
+
+        return endpoints
+    }
+
+    // Helper function to extract headers from the request
+    private fun extractHeadersFromRequest(request: String): Map<String, String> {
+        // Look for headers in the format { 'Content-Type': 'application/json' }
+        val headersPattern = Regex("""\{(.*?)\}""")
+        val headersMatch = headersPattern.find(request)
+        val headers = mutableMapOf<String, String>()
+
+        headersMatch?.groupValues?.get(1)?.split(",")?.forEach { header ->
+            val headerParts = header.split(":")
+            if (headerParts.size == 2) {
+                val key = headerParts[0].trim().removeSurrounding("'", "\"")
+                val value = headerParts[1].trim().removeSurrounding("'", "\"")
+                headers[key] = value
+            }
+        }
+
+        return headers
     }
 }
+
+// Data class for endpoint data
+data class EndpointData(
+    val url: String,
+    val headers: Map<String, String>,
+    val method: String,
+    val bodyFormat: String
+)

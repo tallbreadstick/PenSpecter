@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +32,7 @@ import com.tallbreadstick.penspecter.menus.Navbar
 import com.tallbreadstick.penspecter.models.DomainInfoResponse
 import com.tallbreadstick.penspecter.ui.theme.VeryDarkGray
 import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
@@ -194,22 +197,46 @@ fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = n
 
 @Composable
 fun StyledDnsResult(results: List<Pair<String, String?>>) {
-    Column {
-        results.forEach { (key, value) ->
-            val isError = key == "Error" || value == null || value == "null"
+    val clipboardManager = LocalClipboardManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color(0xFFFFA500))) { // Orange for keys
-                        append("$key: ")
+    Box {
+        Column {
+            results.forEach { (key, value) ->
+                val isError = key == "Error" || value == null || value == "null"
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "$key: ",
+                        color = Color(0xFFFFA500), // Orange
+                        fontSize = 16.sp
+                    )
+                    value?.let {
+                        Text(
+                            text = it,
+                            color = if (isError) Color.Red else Color(0xFF00FF00), // Red or Green
+                            fontSize = 16.sp,
+                            modifier = Modifier.clickable {
+                                clipboardManager.setText(AnnotatedString(it))
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Copied: $it")
+                                }
+                            }
+                        )
                     }
-                    withStyle(style = SpanStyle(color = if (isError) Color.Red else Color(0xFF00FF00))) { // Red for errors, Green for normal values
-                        append(value ?: "null")
-                    }
-                },
-                fontSize = 16.sp
-            )
+                }
+            }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
