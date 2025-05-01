@@ -178,7 +178,11 @@ fun Dashboard(navController: NavController? = null) {
                         title = "Dictionary Attack"
                     )
                     ToolIcon(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                navController?.navigate("permutation_attack")
+                            },
                         resource = painterResource(R.drawable.permutation_attack),
                         title = "Permutation Attack"
                     )

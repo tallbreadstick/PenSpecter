@@ -74,17 +74,20 @@ object RetrofitClient {
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
-    private val client = OkHttpClient.Builder()
+
+    val sharedClient: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
         .build()
+
     private val retrofit = Retrofit.Builder()
         .baseUrl(ShodanBaseUrl)
-        .client(client)
+        .client(sharedClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+
     val locationRetrofit = Retrofit.Builder()
         .baseUrl(LocationBaseUrl)
-        .client(client)
+        .client(sharedClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

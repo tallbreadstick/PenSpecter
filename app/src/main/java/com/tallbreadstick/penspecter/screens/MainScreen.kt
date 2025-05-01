@@ -16,6 +16,9 @@ import com.tallbreadstick.penspecter.screens.auth.RegisterPage
 import com.tallbreadstick.penspecter.screens.application.diagnostic.DNSLookup
 import com.tallbreadstick.penspecter.screens.application.diagnostic.Traceroute
 import com.tallbreadstick.penspecter.screens.application.penetration.DictionaryAttack
+import com.tallbreadstick.penspecter.screens.application.penetration.DictionaryAttackInProgress
+import com.tallbreadstick.penspecter.screens.application.penetration.PermutationAttack
+import com.tallbreadstick.penspecter.screens.application.penetration.PermutationAttackInProgress
 import com.tallbreadstick.penspecter.screens.application.reconnaissance.IPGeolocator
 import com.tallbreadstick.penspecter.screens.application.reconnaissance.WebScraper
 import com.tallbreadstick.penspecter.screens.user.DeveloperPage
@@ -23,6 +26,8 @@ import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.screens.user.UserProfilePage
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
+import com.tallbreadstick.penspecter.viewmodels.DictionaryViewModel
+import com.tallbreadstick.penspecter.viewmodels.PermutationViewModel
 import com.tallbreadstick.penspecter.viewmodels.SettingsViewModel
 
 @Composable
@@ -30,6 +35,8 @@ fun MainScreen() {
     val navController = rememberNavController()
     val settingsViewModel: SettingsViewModel = viewModel()
     val dnsViewModel: DNSViewModel = viewModel()
+    val dictionaryViewModel: DictionaryViewModel = viewModel()
+    val permutationViewModel: PermutationViewModel = viewModel()
     Surface(color = DarkGray) {
         NavHost(navController = navController, startDestination = "login_page", builder = {
 
@@ -82,7 +89,16 @@ fun MainScreen() {
 
             // Penetration Tools
             composable("dictionary_attack") {
-                DictionaryAttack(navController)
+                DictionaryAttack(navController, dictionaryViewModel, LocalContext.current)
+            }
+            composable("dictionary_attack_in_progress") {
+                DictionaryAttackInProgress(navController, dictionaryViewModel)
+            }
+            composable("permutation_attack") {
+                PermutationAttack(navController, permutationViewModel, LocalContext.current)
+            }
+            composable("permutation_attack_in_progress") {
+                PermutationAttackInProgress(navController, permutationViewModel)
             }
 
         })
