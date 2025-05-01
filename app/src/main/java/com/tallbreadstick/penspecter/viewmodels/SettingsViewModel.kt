@@ -18,18 +18,13 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
     private val _settings = MutableStateFlow(
         SettingsEntity(
             deviceDiscovery = true,
-            traceroute = false,
-            packetAnalyzer = false,
+            ping = true,
             dnsLookup = true,
             wifiAnalyzer = true,
             webScraper = true,
             ipGeolocator = true,
-            liveFeeds = true,
             dictionaryAttack = true,
-            permutationAttack = true,
-            darkMode = true,
-            vpn = false,
-            root = false
+            permutationAttack = true
         )
     )
 

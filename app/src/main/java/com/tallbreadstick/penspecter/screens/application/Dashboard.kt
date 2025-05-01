@@ -1,20 +1,15 @@
 package com.tallbreadstick.penspecter.screens.application
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,20 +18,46 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.R
 import com.tallbreadstick.penspecter.components.ToolIcon
 import com.tallbreadstick.penspecter.menus.Navbar
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
+import com.tallbreadstick.penspecter.viewmodels.SettingsViewModel
 
-@Preview
 @Composable
-fun Dashboard(navController: NavController? = null) {
+fun Dashboard(navController: NavController? = null, settingsViewModel: SettingsViewModel) {
+
+    val settings = settingsViewModel.settings.collectAsState().value
+
+    // Function to handle feature navigation and checking if it's enabled
+    fun navigateToFeature(featureName: String, route: String) {
+        val featureEnabled = when (featureName) {
+            "device_discovery" -> settings.deviceDiscovery
+            "ping" -> settings.ping
+            "wifi_analyzer" -> settings.wifiAnalyzer
+            "dns_lookup" -> settings.dnsLookup
+            "web_scraper" -> settings.webScraper
+            "ip_geolocator" -> settings.ipGeolocator
+            "dictionary_attack" -> settings.dictionaryAttack
+            "permutation_attack" -> settings.permutationAttack
+            else -> false
+        }
+
+        if (featureEnabled) {
+            navController?.navigate(route)
+        } else {
+            Toast.makeText(navController?.context, "$featureName is disabled", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         Navbar(navController)
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,7 +87,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("device_discovery")
+                                navigateToFeature("device_discovery", "device_discovery")
                             },
                         resource = painterResource(R.drawable.device_discovery),
                         title = "Device Discovery"
@@ -75,7 +96,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("ping")
+                                navigateToFeature("ping", "ping")
                             },
                         resource = painterResource(R.drawable.traceroute),
                         title = "Ping"
@@ -84,7 +105,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("wifi_analyzer")
+                                navigateToFeature("wifi_analyzer", "wifi_analyzer")
                             },
                         resource = painterResource(R.drawable.wifi_analyzer),
                         title = "WiFi Analyzer"
@@ -98,7 +119,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("dns_lookup")
+                                navigateToFeature("dns_lookup", "dns_lookup")
                             },
                         resource = painterResource(R.drawable.dns_lookup),
                         title = "DNS Lookup"
@@ -107,6 +128,7 @@ fun Dashboard(navController: NavController? = null) {
                     Box(modifier = Modifier.weight(1f)) // xdd
                 }
             }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -129,7 +151,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("web_scraper")
+                                navigateToFeature("web_scraper", "web_scraper")
                             },
                         resource = painterResource(R.drawable.web_scraper),
                         title = "Web Scraper"
@@ -138,7 +160,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("ip_geolocator")
+                                navigateToFeature("ip_geolocator", "ip_geolocator")
                             },
                         resource = painterResource(R.drawable.ip_geolocator),
                         title = "IP Geo Locator"
@@ -168,7 +190,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("dictionary_attack")
+                                navigateToFeature("dictionary_attack", "dictionary_attack")
                             },
                         resource = painterResource(R.drawable.dictionary_attack),
                         title = "Dictionary Attack"
@@ -177,7 +199,7 @@ fun Dashboard(navController: NavController? = null) {
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                navController?.navigate("permutation_attack")
+                                navigateToFeature("permutation_attack", "permutation_attack")
                             },
                         resource = painterResource(R.drawable.permutation_attack),
                         title = "Permutation Attack"

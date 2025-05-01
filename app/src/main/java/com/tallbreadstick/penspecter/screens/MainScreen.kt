@@ -2,6 +2,9 @@ package com.tallbreadstick.penspecter.screens
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -25,6 +28,7 @@ import com.tallbreadstick.penspecter.screens.application.reconnaissance.WebScrap
 import com.tallbreadstick.penspecter.screens.user.DeveloperPage
 import com.tallbreadstick.penspecter.screens.user.SettingsPage
 import com.tallbreadstick.penspecter.screens.user.UserProfilePage
+import com.tallbreadstick.penspecter.tools.DatabaseProvider
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
 import com.tallbreadstick.penspecter.viewmodels.DictionaryViewModel
@@ -34,6 +38,15 @@ import com.tallbreadstick.penspecter.viewmodels.SettingsViewModel
 
 @Composable
 fun MainScreen() {
+    val db = DatabaseProvider.getDatabase(LocalContext.current)
+    val userDao = db.userDao()
+    val userCount = remember { mutableStateOf(0) }
+
+    LaunchedEffect(true) {
+        userCount.value = userDao.getUserCount()
+    }
+
+    val startDestination = if (userCount.value > 0) "login_page" else "register_page"
     val navController = rememberNavController()
     val settingsViewModel: SettingsViewModel = viewModel()
     val dnsViewModel: DNSViewModel = viewModel()
@@ -41,7 +54,7 @@ fun MainScreen() {
     val dictionaryViewModel: DictionaryViewModel = viewModel()
     val permutationViewModel: PermutationViewModel = viewModel()
     Surface(color = DarkGray) {
-        NavHost(navController = navController, startDestination = "login_page", builder = {
+        NavHost(navController = navController, startDestination = startDestination, builder = {
 
             // Auth Pages
             composable("login_page") {
@@ -59,7 +72,7 @@ fun MainScreen() {
 
             // Control Pages
             composable("dashboard") {
-                Dashboard(navController)
+                Dashboard(navController, settingsViewModel)
             }
             composable("settings") {
                 SettingsPage(navController, settingsViewModel)

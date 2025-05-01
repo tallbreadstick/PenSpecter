@@ -27,9 +27,8 @@ object DatabaseProvider {
 
 }
 
-@Database(entities = [SettingsEntity::class], version = 2, exportSchema = false)
+@Database(entities = [SettingsEntity::class, UserEntity::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun settingsDao(): SettingsDao
-
+    abstract fun userDao(): UserDao
 }

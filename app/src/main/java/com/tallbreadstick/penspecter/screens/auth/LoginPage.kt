@@ -36,12 +36,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.tallbreadstick.penspecter.tools.loginUser
 import com.tallbreadstick.penspecter.tools.validatePassword
 import com.tallbreadstick.penspecter.tools.validateUsername
 import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.ui.theme.DidactGothic
 import com.tallbreadstick.penspecter.ui.theme.PaleBlue
 import com.tallbreadstick.penspecter.ui.theme.Roboto
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @Preview
 @Composable
@@ -57,6 +60,8 @@ fun LoginPage(navController: NavController? = null, context: Context? = null) {
     }
     val usernameScroll = rememberScrollState()
     val passwordScroll = rememberScrollState()
+    val scope = rememberCoroutineScope() // Create a CoroutineScope for async work
+
     LaunchedEffect(username.value) {
         usernameScroll.animateScrollTo(usernameScroll.maxValue)
     }
@@ -144,42 +149,34 @@ fun LoginPage(navController: NavController? = null, context: Context? = null) {
                     Toast.makeText(context, "Password contains illegal characters or is too short!", Toast.LENGTH_LONG).show()
                     return@Button
                 }
-                if (!agree.value) {
-                    Toast.makeText(context, "You must agree to the terms and conditions!", Toast.LENGTH_LONG).show()
-                    return@Button
-                }
-                Toast.makeText(context, "Logged in successfully!", Toast.LENGTH_LONG).show()
-                navController?.navigate("dashboard") {
-                    popUpTo("login_page") { inclusive = true }
-                    launchSingleTop = true
+
+                // Perform login asynchronously
+                scope.launch {
+                    val loginResult = loginUser(context!!, username.value, password.value)
+                    if (loginResult) {
+                        navController?.navigate("dashboard") {
+                            popUpTo("login_page") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
                 }
             }
         ) {
-            Text(
-                text = "Sign In",
-                fontFamily = Roboto,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
+            Text(text = "Sign In", fontFamily = Roboto, fontWeight = FontWeight.Bold, fontSize = 20.sp)
         }
-        Text(
-            text = "forgot password?",
-            color = Color.Gray,
-            style = TextStyle(textDecoration = TextDecoration.Underline),
-            fontSize = 16.sp,
-            modifier = Modifier.padding(0.dp, 80.dp, 0.dp, 0.dp)
-        )
         Text(
             text = "don't have an account? register",
             color = Color.Gray,
             style = TextStyle(textDecoration = TextDecoration.Underline),
             fontSize = 16.sp,
-            modifier = Modifier.clickable {
-                navController?.navigate("register_page") {
-                    popUpTo("login_page") { inclusive = true }
-                    launchSingleTop = true
+            modifier = Modifier
+                .padding(0.dp, 80.dp, 0.dp, 0.dp)
+                .clickable {
+                    navController?.navigate("register_page") {
+                        popUpTo("login_page") { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
-            }
         )
     }
 }

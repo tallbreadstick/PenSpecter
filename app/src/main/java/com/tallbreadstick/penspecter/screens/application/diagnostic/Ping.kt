@@ -61,7 +61,7 @@ fun Ping(navController: NavController? = null) {
                 result.value != null -> {
                 Text(
                     text = result.value ?: "",
-                    fontSize = 16.sp,
+                    fontSize = 32.sp,
                     fontFamily = Roboto,
                     color = if (result.value!!.contains("ms")) Color.Green else Color.Red,
                     modifier = Modifier.padding(horizontal = 16.dp)

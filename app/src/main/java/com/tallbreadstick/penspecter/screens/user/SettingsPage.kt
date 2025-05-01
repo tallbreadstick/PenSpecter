@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.AndroidViewModel
 import androidx.navigation.NavController
 import com.tallbreadstick.penspecter.components.SettingItem
 import com.tallbreadstick.penspecter.components.SettingsSection
@@ -45,18 +44,13 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
     // diagnostic tools
     val featureSettings = mapOf(
         "device_discovery" to remember { mutableStateOf(settings.deviceDiscovery) },
-        "traceroute" to remember { mutableStateOf(settings.traceroute) },
-        "packet_analyzer" to remember { mutableStateOf(settings.packetAnalyzer) },
+        "ping" to remember { mutableStateOf(settings.ping) },
         "dns_lookup" to remember { mutableStateOf(settings.dnsLookup) },
         "wifi_analyzer" to remember { mutableStateOf(settings.wifiAnalyzer) },
         "web_scraper" to remember { mutableStateOf(settings.webScraper) },
         "ip_geolocator" to remember { mutableStateOf(settings.ipGeolocator) },
-        "live_feeds" to remember { mutableStateOf(settings.liveFeeds) },
         "dictionary_attack" to remember { mutableStateOf(settings.dictionaryAttack) },
-        "permutation_attack" to remember { mutableStateOf(settings.permutationAttack) },
-        "dark_mode" to remember { mutableStateOf(settings.darkMode) },
-        "vpn" to remember { mutableStateOf(settings.vpn) },
-        "root" to remember { mutableStateOf(settings.root) },
+        "permutation_attack" to remember { mutableStateOf(settings.permutationAttack) }
     )
 
     LaunchedEffect(navController) {
@@ -64,18 +58,13 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
             viewModel!!.updateSetting { currentSettings ->
                 currentSettings.copy(
                     deviceDiscovery = featureSettings["device_discovery"]!!.value,
-                    traceroute = featureSettings["traceroute"]!!.value,
-                    packetAnalyzer = featureSettings["packet_analyzer"]!!.value,
+                    ping = featureSettings["ping"]!!.value,
                     dnsLookup = featureSettings["dns_lookup"]!!.value,
                     wifiAnalyzer = featureSettings["wifi_analyzer"]!!.value,
                     webScraper = featureSettings["web_scraper"]!!.value,
                     ipGeolocator = featureSettings["ip_geolocator"]!!.value,
-                    liveFeeds = featureSettings["live_feeds"]!!.value,
                     dictionaryAttack = featureSettings["dictionary_attack"]!!.value,
-                    permutationAttack = featureSettings["permutation_attack"]!!.value,
-                    darkMode = featureSettings["dark_mode"]!!.value,
-                    vpn = featureSettings["vpn"]!!.value,
-                    root = featureSettings["root"]!!.value
+                    permutationAttack = featureSettings["permutation_attack"]!!.value
                 )
             }
         }
@@ -104,8 +93,7 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
 
             SettingsSection(title = "Diagnostic Tools") {
                 SettingItem(text = "Enable Device Discovery", checkState = featureSettings["device_discovery"]!!)
-                SettingItem(text = "Enable Traceroute", checkState = featureSettings["traceroute"]!!)
-                SettingItem(text = "Enable Packet Analyzer", checkState = featureSettings["packet_analyzer"]!!)
+                SettingItem(text = "Enable Ping", checkState = featureSettings["ping"]!!)
                 SettingItem(text = "Enable DNS Lookup", checkState = featureSettings["dns_lookup"]!!)
                 SettingItem(text = "Enable WiFi Analyzer", checkState = featureSettings["wifi_analyzer"]!!)
             }
@@ -115,7 +103,6 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
             SettingsSection(title = "Reconnaissance Tools") {
                 SettingItem(text = "Enable Web Scraper", checkState = featureSettings["web_scraper"]!!)
                 SettingItem(text = "Enable IP Geolocator", checkState = featureSettings["ip_geolocator"]!!)
-                SettingItem(text = "Enable Live Feeds", checkState = featureSettings["live_feeds"]!!)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -123,19 +110,6 @@ fun SettingsPage(navController: NavController? = null, viewModel: SettingsViewMo
             SettingsSection(title = "Penetration Tools") {
                 SettingItem(text = "Enable Dictionary Attack", checkState = featureSettings["dictionary_attack"]!!)
                 SettingItem(text = "Enable Permutation Attack", checkState = featureSettings["permutation_attack"]!!)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SettingsSection(title = "Appearance") {
-                SettingItem(text = "Enable Dark Mode", checkState = featureSettings["dark_mode"]!!)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SettingsSection(title = "Security") {
-                SettingItem(text = "Enable VPN", checkState = featureSettings["vpn"]!!)
-                SettingItem(text = "Enable Root", checkState = featureSettings["root"]!!)
             }
 
             Spacer(modifier = Modifier.height(16.dp))

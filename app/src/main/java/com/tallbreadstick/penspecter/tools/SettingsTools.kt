@@ -24,17 +24,12 @@ data class SettingsEntity(
     @PrimaryKey val id: Int = 0,
 
     var deviceDiscovery: Boolean,
-    var traceroute: Boolean,
-    var packetAnalyzer: Boolean,
+    var ping: Boolean,
     var dnsLookup: Boolean,
     var wifiAnalyzer: Boolean,
     var webScraper: Boolean,
     var ipGeolocator: Boolean,
-    var liveFeeds: Boolean,
     var dictionaryAttack: Boolean,
-    var permutationAttack: Boolean,
-    var darkMode: Boolean,
-    var vpn: Boolean,
-    var root: Boolean
+    var permutationAttack: Boolean
 
 )
