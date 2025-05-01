@@ -38,7 +38,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = null) {
 
-    val sidebarOpen = remember { mutableStateOf(false) }
     val queryTypes = listOf("RESOLVE", "REVERSE", "INFO")
     val queryType = remember { mutableStateOf("RESOLVE") }
     val domain = remember { mutableStateOf("") }
@@ -53,7 +52,7 @@ fun DNSLookup(navController: NavController? = null, viewModel: DNSViewModel? = n
             .fillMaxSize()
             .background(DarkGray)
     ) {
-        Navbar(navController, sidebarOpen)
+        Navbar(navController)
         Column(
             modifier = Modifier
                 .fillMaxSize()

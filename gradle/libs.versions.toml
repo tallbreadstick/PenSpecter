@@ -41,8 +41,10 @@ androidx-room-compiler-v250 = { module = "androidx.room:room-compiler", version.
 androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFontsVersion" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilCompose" }
+compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "composeM3" }
 compose-m3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "composeM3" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+core = { module = "com.patrykandpatrick.vico:core", version.ref = "composeM3" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
 dotenv-kotlin-v651 = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlinVersion" }
 github-maplibre-gl-native = { module = "com.github.maplibre:maplibre-gl-native", version.ref = "maplibreGlNativeVersion" }

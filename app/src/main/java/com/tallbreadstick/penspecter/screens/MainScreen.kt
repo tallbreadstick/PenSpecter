@@ -29,6 +29,7 @@ import com.tallbreadstick.penspecter.ui.theme.DarkGray
 import com.tallbreadstick.penspecter.viewmodels.DNSViewModel
 import com.tallbreadstick.penspecter.viewmodels.DictionaryViewModel
 import com.tallbreadstick.penspecter.viewmodels.PermutationViewModel
+import com.tallbreadstick.penspecter.viewmodels.ScraperViewModel
 import com.tallbreadstick.penspecter.viewmodels.SettingsViewModel
 
 @Composable
@@ -36,6 +37,7 @@ fun MainScreen() {
     val navController = rememberNavController()
     val settingsViewModel: SettingsViewModel = viewModel()
     val dnsViewModel: DNSViewModel = viewModel()
+    val scraperViewModel: ScraperViewModel = viewModel()
     val dictionaryViewModel: DictionaryViewModel = viewModel()
     val permutationViewModel: PermutationViewModel = viewModel()
     Surface(color = DarkGray) {
@@ -85,7 +87,7 @@ fun MainScreen() {
 
             // Reconnaissance Tools
             composable("web_scraper") {
-                WebScraper(navController, LocalContext.current)
+                WebScraper(navController, scraperViewModel, LocalContext.current)
             }
             composable("ip_geolocator") {
                 IPGeolocator(navController)

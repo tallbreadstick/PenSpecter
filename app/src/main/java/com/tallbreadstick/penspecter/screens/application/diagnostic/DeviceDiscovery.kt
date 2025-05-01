@@ -44,7 +44,7 @@ import com.tallbreadstick.penspecter.ui.theme.Roboto
 @Preview
 @Composable
 fun DeviceDiscovery(navController: NavController? = null, context: Context? = null) {
-    val sidebarOpen = remember { mutableStateOf(false) }
+
     val wifiNetworks = remember { mutableStateListOf<ScanResult>() }
     val bluetoothDevices = remember { mutableStateListOf<BluetoothDevice>() }
 
@@ -102,7 +102,7 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
             .background(DarkGray),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Navbar(navController, sidebarOpen)
+        Navbar(navController)
 
         Text(
             text = "Device Discovery",
@@ -122,13 +122,8 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
             items(wifiNetworks) { network ->
                 DeviceCard(network.SSID.ifEmpty { "Hidden Network" })
             }
-            item { SectionTitle("Nearby Bluetooth Devices") }
-            items(bluetoothDevices) { device ->
-                DeviceCard(device.name ?: "Unknown Device")
-            }
         }
 
-        // 🔹 Run Security Sweep Button
         Button(
             onClick = {
                 runSecuritySweep(wifiNetworks) { report ->
@@ -154,7 +149,6 @@ fun DeviceDiscovery(navController: NavController? = null, context: Context? = nu
         }
     }
 
-    // 🔹 Security Report Popup Dialog
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },

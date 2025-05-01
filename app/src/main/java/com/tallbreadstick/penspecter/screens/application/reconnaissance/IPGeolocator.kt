@@ -59,7 +59,6 @@ fun IPGeolocator(navController: NavController? = null) {
         position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 10f)
     }
 
-// Trigger marker & camera position change when ViewModel updates
     LaunchedEffect(latitude, longitude) {
         val target = LatLng(latitude, longitude)
         cameraPositionState.animate(

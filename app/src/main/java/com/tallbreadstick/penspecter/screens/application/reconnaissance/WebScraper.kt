@@ -27,14 +27,10 @@ import com.tallbreadstick.penspecter.viewmodels.ScraperViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tallbreadstick.penspecter.tools.EndpointData
 
-@Preview
 @Composable
-fun WebScraper(navController: NavController? = null, context: Context? = null) {
-    val sidebarOpen = remember { mutableStateOf(false) }
-    var urlInput by remember { mutableStateOf("") }
+fun WebScraper(navController: NavController? = null, scraperViewModel: ScraperViewModel, context: Context? = null) {
 
-    // Get the ViewModel
-    val scraperViewModel: ScraperViewModel = viewModel()
+    var urlInput by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -42,7 +38,7 @@ fun WebScraper(navController: NavController? = null, context: Context? = null) {
             .background(DarkGray),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Navbar(navController, sidebarOpen)
+        Navbar(navController)
 
         Text(
             text = "Web Scraper",

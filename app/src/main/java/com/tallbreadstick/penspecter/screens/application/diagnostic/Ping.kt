@@ -24,7 +24,7 @@ import runPing
 @Preview
 @Composable
 fun Ping(navController: NavController? = null) {
-    val sidebarOpen = remember { mutableStateOf(false) }
+
     val targetHost = remember { mutableStateOf("") }
     val isLoading = remember { mutableStateOf(false) }
     val result = remember { mutableStateOf<String?>(null) }
@@ -36,7 +36,7 @@ fun Ping(navController: NavController? = null) {
             .background(DarkGray),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Navbar(navController, sidebarOpen)
+        Navbar(navController)
 
         Text(
             text = "Ping Utility",
