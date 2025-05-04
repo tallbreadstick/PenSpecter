@@ -53,9 +53,9 @@ class PermutationViewModel : ViewModel() {
         onFinished: () -> Unit
     ) {
         val charset = when (selectedCharset.value) {
-            "alphabetic" -> " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "numeric" -> " 0123456789"
-            "alphanumeric" -> " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            "alphabetic" -> "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "numeric" -> "0123456789"
+            "alphanumeric" -> "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             "ascii" -> (33..126).map { it.toChar() }.joinToString("")
             else -> ""
         }
